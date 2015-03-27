@@ -1,9 +1,11 @@
 package com.guster.sqlitecreator;
 
 import android.database.DatabaseUtils;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +28,7 @@ public class SqlBuilder {
     private StringBuilder leftJoinQuery = new StringBuilder();
     private StringBuilder orderQuery = new StringBuilder();
     private StringBuilder groupQuery = new StringBuilder();
+    private StringBuilder insertQuery = new StringBuilder();
     private StringBuilder updateQuery = new StringBuilder();
     private StringBuilder deleteQuery = new StringBuilder();
     private HashMap<String, Object> bindValues = new HashMap<String, Object>();
@@ -275,6 +278,47 @@ public class SqlBuilder {
         return groupBy(col);
     }
 
+    /*public static String getInsertStmnt(String tableName, Object ... vals) {
+        String stmnt = "INSERT INTO " + tableName + " VALUES (";
+        for(int i=0; i<vals.length; i++) {
+            stmnt += "'" + vals[i] + "'";
+
+            if(i < vals.length - 1) {
+                stmnt += ", ";
+            }
+        }
+        stmnt += "); ";
+        return stmnt;
+    }*/
+    public static String getInsertStmnt(Object ... vals) {
+        String stmnt = "(";
+        for(int i=0; i<vals.length; i++) {
+            Object value = vals[i];
+            if(value != null)
+                value = DatabaseUtils.sqlEscapeString(value.toString());
+            stmnt += value;
+
+            if(i < vals.length - 1) {
+                stmnt += ", ";
+            }
+        }
+        stmnt += ")";
+        return stmnt;
+    }
+
+    public SqlBuilder insert(String tableName, Object ... vals) {
+        String stmnt = "INSERT INTO " + tableName + " VALUES (";
+        for(int i=0; i<vals.length; i++) {
+            stmnt += vals[i];
+
+            if(i < vals.length - 1) {
+                stmnt += ", ";
+            }
+        }
+        stmnt += "); ";
+        return this;
+    }
+
     /**
      * Create an UPDATE statement
      *
@@ -344,12 +388,15 @@ public class SqlBuilder {
         sb.append(innerJoinQuery.toString());
         sb.append(space);
         sb.append(leftJoinQuery.toString());
+        if(insertQuery.length() > 0) {
+            sb.append(insertQuery.toString());
+        }
         if(updateQuery.length() > 0) {
-            sb.append(space);
+            //sb.append(space);
             sb.append(updateQuery.toString());
         }
         if(deleteQuery.length() > 0) {
-            sb.append(space);
+            //sb.append(space);
             sb.append(deleteQuery.toString());
         }
         sb.append(space);

@@ -5,7 +5,6 @@ import android.database.Cursor;
 
 import com.guster.sqlitecreator.Repository;
 import com.guster.sqlitecreator.SqlBuilder;
-import com.guster.sqlitecreator.sample.MySqliteHelper;
 import com.guster.sqlitecreator.sample.domain.Attendance;
 import com.guster.sqlitecreator.sample.domain.Lecturer;
 import com.guster.sqlitecreator.sample.domain.Student;
@@ -20,7 +19,7 @@ import java.util.List;
 public class AttendanceRepository extends Repository<Attendance> {
 
     public AttendanceRepository(Context context) {
-        super(context, MySqliteHelper.getInstance(context), Attendance.class);
+        super(context, Attendance.class);
     }
 
     @Override

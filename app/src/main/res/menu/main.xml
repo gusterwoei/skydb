@@ -5,10 +5,19 @@
 
     <item android:id="@+id/action_add"
         android:title="New"
-        android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+        android:icon="@android:drawable/ic_menu_add"
         app:showAsAction="always"/>
     <item android:id="@+id/action_debug"
         android:title="Debug"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_insert"
+        android:title="Insert All"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_fetch"
+        android:title="Fetch All"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_delete"
+        android:title="Delete All"
         app:showAsAction="never" />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"

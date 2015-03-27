@@ -20,7 +20,6 @@ public class Student {
     public static final String COL_CREATED_DATE = "createdDate";
     public static final String COL_MODIFIED_DATE = "modifiedDate";
 
-    //@DbField(column = COL_ID, primaryKey = true, autoIncrement = true)
     private long _id;
     @Column(column = COL_STUDENT_ID, primaryKey = true, notNull = true)
     private String studentId;

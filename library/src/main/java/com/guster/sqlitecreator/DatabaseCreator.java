@@ -33,21 +33,31 @@ import java.util.List;
 /**
  * Created by Gusterwoei on 10/3/14.
  */
-public abstract class InglabSQLiteOpenHelper extends SQLiteOpenHelper {
-    public static final String SQL_ON_FOREIGN_KEY = "PRAGMA foreign_keys=ON;";
-    public static final String SQL_SYNC_MODE_NORMAL = "PRAGMA synchronous=1";
+public abstract class DatabaseCreator extends SQLiteOpenHelper {
+    private static final String SQL_ON_FOREIGN_KEY = "PRAGMA foreign_keys=ON;";
+    private static final String SQL_SYNC_MODE_NORMAL = "PRAGMA synchronous=OFF";
 
-    protected static Context context;
-    protected static SQLiteDatabase sqLiteDatabase;
+    // data
+    private static Context context;
+    private static SQLiteDatabase sqLiteDatabase;
+    private static DatabaseCreator mInglabSqliteOpenHelper;
 
-    public InglabSQLiteOpenHelper(Context context, String databaseName, int databaseVersion) {
-        super(context, databaseName, null, databaseVersion);
-        this.context = context.getApplicationContext();
+    public DatabaseCreator(Context context, String databaseName, Integer databaseVersion) {
+        super(context.getApplicationContext(), databaseName, null, databaseVersion);
+        initialize(context);
     }
 
-    public InglabSQLiteOpenHelper(Context context, String databaseName, int databaseVersion, SQLiteDatabase.CursorFactory cursorFactory) {
-        super(context, databaseName, cursorFactory, databaseVersion);
-        this.context = context.getApplicationContext();
+    private void initialize(Context ctx) {
+        context = ctx.getApplicationContext();
+        if(mInglabSqliteOpenHelper == null) {
+            mInglabSqliteOpenHelper = getDatabase();
+        }
+    }
+
+    protected abstract DatabaseCreator getDatabase();
+
+    public static DatabaseCreator getInstance() {
+        return mInglabSqliteOpenHelper;
     }
 
     @Override
@@ -68,14 +78,14 @@ public abstract class InglabSQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i2) {
-        Log.d("NISSAN", "Upgrading database from version " + i + " to version " + i2 +
-                " WARNING: All data will be deleted");
-        onUpgradeDb(db, i, i2);
+        for(int version = 1; version <= i2; version++) {
+            onUpgradeDb(db, i2);
+        }
     }
-    public abstract void onUpgradeDb(SQLiteDatabase db, int oldVersion, int newVersion);
+    public abstract void onUpgradeDb(SQLiteDatabase db, int newVersion);
 
 
-    protected String createSchemaFor(Class<?> cls) {
+    protected void createSchemaFor(Class<?> cls, SQLiteDatabase db) {
         StringBuilder schema = new StringBuilder();
 
         // get constructors
@@ -124,8 +134,6 @@ public abstract class InglabSQLiteOpenHelper extends SQLiteOpenHelper {
                         // primary key?
                         if(df.primaryKey())
                             str += "PRIMARY KEY ";
-                        /*if(df.primaryKey())
-                            primaryKeyCols.add(df.column());*/
 
                         // auto increment?
                         if(df.autoIncrement())
@@ -164,15 +172,15 @@ public abstract class InglabSQLiteOpenHelper extends SQLiteOpenHelper {
                 schema.append(")");
 
             } catch(Exception e) {
-                Log.e("INGLABLIB", getClass().getSimpleName() + ": CreateSchema Exception: " + e.getMessage());
+                Log.e("ABC", getClass().getSimpleName() + ": CreateSchema Exception: " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
             // no table name, error
-            Log.e("INGLABLIB", getClass().getSimpleName() + ": No Table Name found");
+            Log.e("ABC", getClass().getSimpleName() + ": No Table Name found");
         }
 
-        return schema.toString();
+        db.execSQL(schema.toString());
     }
 
     public void deleteSchema(Class<?> cls) {
@@ -183,11 +191,7 @@ public abstract class InglabSQLiteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void recreateTable(SQLiteDatabase db) {
-        onCreate(db);
-    }
-
-    public SQLiteDatabase openDatabase() {
+    public SQLiteDatabase createDatabase() {
         if(sqLiteDatabase == null) {
             sqLiteDatabase = getWritableDatabase();
         }

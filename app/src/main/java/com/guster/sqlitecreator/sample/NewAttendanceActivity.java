@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.guster.sqlitecreator.sample.domain.Attendance;
 import com.guster.sqlitecreator.sample.domain.Lecturer;
@@ -136,6 +137,8 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
 
             setResult(RESULT_OK);
             finish();
+
+            Toast.makeText(this, "New attendance added!", Toast.LENGTH_SHORT).show();
         }
     }
 

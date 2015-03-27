@@ -1,7 +1,6 @@
 package com.guster.sqlitecreator.sample;
 
 import android.app.Application;
-import android.util.Log;
 
 /**
  * Created by Gusterwoei on 3/17/15.
@@ -9,18 +8,15 @@ import android.util.Log;
  */
 public class MyApplication extends Application {
 
-
     @Override
     public void onCreate() {
         super.onCreate();
 
         // create db
-        Log.d("SQLCREATOR", "create database");
-        MySqliteHelper dbHelpder = MySqliteHelper.getInstance(this);
-        dbHelpder.openDatabase();
+        MyDatabase dbHelper = new MyDatabase(this, "sqliteCreator.db", 1);
+        dbHelper.createDatabase();
 
         // load dummy data
-        Log.d("SQLCREATOR", "load dummy data");
         DataContentProvider.loadDummyData(this);
     }
 }

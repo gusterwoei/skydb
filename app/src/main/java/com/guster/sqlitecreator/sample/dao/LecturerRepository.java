@@ -2,9 +2,7 @@ package com.guster.sqlitecreator.sample.dao;
 
 import android.content.Context;
 
-import com.guster.sqlitecreator.InglabSQLiteOpenHelper;
 import com.guster.sqlitecreator.Repository;
-import com.guster.sqlitecreator.sample.MySqliteHelper;
 import com.guster.sqlitecreator.sample.domain.Lecturer;
 
 /**
@@ -13,6 +11,6 @@ import com.guster.sqlitecreator.sample.domain.Lecturer;
 public class LecturerRepository extends Repository<Lecturer> {
 
     public LecturerRepository(Context context) {
-        super(context, MySqliteHelper.getInstance(context), Lecturer.class);
+        super(context, Lecturer.class);
     }
 }

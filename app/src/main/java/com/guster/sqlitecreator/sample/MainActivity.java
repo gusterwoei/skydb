@@ -86,10 +86,25 @@ public class MainActivity extends BaseActivity {
             return true;
         }
         else if(id == R.id.action_debug) {
-            saveDbToSdCard(MySqliteHelper.DB_NAME);
+            saveDbToSdCard("sqliteCreator.db");
         }
         else if(id == R.id.action_add) {
             startActivityForResult(new Intent(this, NewAttendanceActivity.class), 99);
+        }
+        else if(id == R.id.action_delete) {
+            Log.d("ABC", "Deleting all subjects...");
+            getSubjectRepository().deleteAll();
+        }
+        else if(id == R.id.action_insert) {
+            Log.d("ABC", "Inserting all subjects...");
+            DataContentProvider.testDbInsertPerformance(getApplicationContext());
+        }
+        else if(id == R.id.action_fetch) {
+            Log.d("ABC", "Fetching all subjects...");
+            long time1 = System.currentTimeMillis();
+            getSubjectRepository().findAll();
+            long time2 = System.currentTimeMillis();
+            Log.d("ABC", "Fetch time = " + (time2 - time1));
         }
 
         return super.onOptionsItemSelected(item);

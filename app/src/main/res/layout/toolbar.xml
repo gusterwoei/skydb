@@ -22,7 +22,7 @@
             android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
             android:gravity="center"
             android:padding="10dp"
-            android:text="New Contact +"
+            android:text=""
             android:textSize="18sp"
             android:textColor="@color/white"/>
     </android.support.v7.widget.Toolbar>

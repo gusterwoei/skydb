@@ -4,5 +4,7 @@
     <string name="app_name">SqliteCreator</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="db_name">sqliteCreator.db</string>
+    <string name="db_version">1</string>
 
 </resources>

@@ -38,8 +38,8 @@ import java.util.List;
 public abstract class Repository<T> {
     protected Context context;
     protected static SQLiteDatabase db;
-    protected InglabSQLiteOpenHelper dbManager;
     private Class<T> classType;
+    //protected InglabSQLiteOpenHelper dbManager;
 
     protected static boolean isTransactionBegun = false;
 
@@ -47,26 +47,27 @@ public abstract class Repository<T> {
     private List<String> primaryKeys;
     private List<Field> primaryKeyFields;
 
-    //public Repository(Context context, String tableName, InglabSQLiteOpenHelper dbManager) {
-    public Repository(Context context, InglabSQLiteOpenHelper dbManager, Class<T> type) {
+    //public Repository(Context context, InglabSQLiteOpenHelper dbManager, Class<T> type) {
+    public Repository(Context context, Class<T> type) {
         this.context = context;
-        this.dbManager = dbManager;
+        //this.dbManager = dbManager;
+        //open();
+        db = DatabaseCreator.getInstance().createDatabase();
         this.classType = type;
-        open();
         init(classType);
     }
 
-    public void open() {
+    /*public void open() {
         db = dbManager.openDatabase();
-    }
+    }*/
 
-    public void close() {
+    /*public void close() {
         dbManager.close();
     }
 
     public void recreate() {
         dbManager.recreateTable(db);
-    }
+    }*/
 
     protected Context getContext() {
         return context;
@@ -86,16 +87,16 @@ public abstract class Repository<T> {
 
     public synchronized static void beginTransaction() {
         if(!isTransactionBegun) {
-            db.beginTransaction();
             setIsTransactionBegun(true);
+            db.beginTransaction();
         }
     }
 
     public synchronized static void endTransaction() {
         if(isTransactionBegun) {
+            setIsTransactionBegun(false);
             db.setTransactionSuccessful();
             db.endTransaction();
-            setIsTransactionBegun(false);
         }
     }
 
@@ -227,51 +228,38 @@ public abstract class Repository<T> {
      * @return T
      *
      */
-    //protected T save(T newItem, T existingItem) {
     public T save(T newItem) {
         init(newItem.getClass());
 
         String where = getSaveCriteriaWheres(newItem);
 
+        Long id = null;
         if(where == null) {
             // save / update existing record
-            db.insertWithOnConflict(TABLE_NAME, null, getFields(newItem), SQLiteDatabase.CONFLICT_REPLACE);
+            id = db.insertWithOnConflict(TABLE_NAME, null, getFields(newItem), SQLiteDatabase.CONFLICT_REPLACE);
         } else {
             // save new record based on the save criteria(s)
             List<T> existingList = findByQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + where);
             if(existingList.isEmpty())
-                db.insert(TABLE_NAME, null, getFields(newItem));
+                id = db.insert(TABLE_NAME, null, getFields(newItem));
             else
                 db.update(TABLE_NAME, getFields(newItem), where, null);
         }
 
-        /*try {
-            String where = "";
-            for (int i=0; i<primaryKeyFields.size(); i++) {
-                String column = primaryKeys.get(i);
-                Object value = primaryKeyFields.get(i).get(existingItem);
-                where += column + " = " + DatabaseUtils.sqlEscapeString((String) value);
-
-                if(i < primaryKeyFields.size() - 1) {
-                    where += " AND ";
+        if(id != null) {
+            for(Field f : primaryKeyFields) {
+                try {
+                    Column column = f.getAnnotation(Column.class);
+                    if(column.autoIncrement()) {
+                        f.setLong(newItem, id);
+                        break;
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    Log.e("SQLCREATOR", getClass().getSimpleName() + ": Save Exception - " + e.getMessage());
                 }
             }
-        } catch (IllegalAccessException e) {
-            Log.e("SQLCREATOR", "save exception: " + e.getMessage());
-            e.printStackTrace();
-        }*/
-
-        /*if(existingItem != null) {
-            // update existing contact
-            String id = "'" + existingItem.get_id() + "'";
-            db.update(TABLE_NAME, getFields(newItem), COL_ID + " = " + id, null);
-            newItem.set_id(existingItem.get_id());
-        } else {
-            // insert into db
-            long id;
-            id = db.insert(TABLE_NAME, null, getFields(newItem));
-            newItem.set_id(id);
-        }*/
+        }
 
         return newItem;
     }

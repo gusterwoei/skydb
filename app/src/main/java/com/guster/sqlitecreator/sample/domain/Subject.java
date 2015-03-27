@@ -25,6 +25,17 @@ public class Subject {
     private long createdDate;
     @Column(column = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
+    // extra dummy fields
+    @Column(column = "dummy1")
+    private String dummy1;
+    @Column(column = "dummy2")
+    private String dummy2;
+    @Column(column = "dummy3")
+    private String dummy3;
+    @Column(column = "dummy4")
+    private String dummy4;
+    @Column(column = "dummy5")
+    private String dummy5;
 
     @Table(name = TABLE_NAME)
     public Subject() {}
