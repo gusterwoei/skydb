@@ -8,9 +8,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {
-    public String column();
+    public String name();
     public boolean autoIncrement() default false;
     public boolean primaryKey() default false;
-    public boolean saveCriteria() default false;
+    public boolean unique() default false;
     public boolean notNull() default false;
 }

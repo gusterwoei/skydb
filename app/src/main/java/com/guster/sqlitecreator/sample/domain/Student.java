@@ -21,23 +21,23 @@ public class Student {
     public static final String COL_MODIFIED_DATE = "modifiedDate";
 
     private long _id;
-    @Column(column = COL_STUDENT_ID, primaryKey = true, notNull = true)
+    @Column(name = COL_STUDENT_ID, primaryKey = true, notNull = true)
     private String studentId;
-    @Column(column = COL_FIRST_NAME, notNull = true)
+    @Column(name = COL_FIRST_NAME, notNull = true)
     private String firstName;
-    @Column(column = COL_LAST_NAME, notNull = true)
+    @Column(name = COL_LAST_NAME, notNull = true)
     private String lastName;
-    @Column(column = COL_GENDER, notNull = true)
+    @Column(name = COL_GENDER, notNull = true)
     private String gender;
-    @Column(column = COL_DOB)
+    @Column(name = COL_DOB)
     private String dob;
-    @Column(column = COL_FACULTY_ID, notNull = true)
+    @Column(name = COL_FACULTY_ID, notNull = true)
     private int facultyId;
-    @Column(column = COL_GPA, notNull = true)
+    @Column(name = COL_GPA, notNull = true)
     private double gpa;
-    @Column(column = COL_CREATED_DATE, notNull = true)
+    @Column(name = COL_CREATED_DATE, notNull = true)
     private long createdDate;
-    @Column(column = COL_MODIFIED_DATE, notNull = true)
+    @Column(name = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
 
     @Table(name = TABLE_NAME)

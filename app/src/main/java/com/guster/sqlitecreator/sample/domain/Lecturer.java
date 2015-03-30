@@ -18,15 +18,15 @@ public class Lecturer {
 
     //@DbField(column = COL_ID, primaryKey = true, autoIncrement = true)
     private long _id;
-    @Column(column = COL_FIRST_NAME, notNull = true)
+    @Column(name = COL_FIRST_NAME, notNull = true)
     private String firstName;
-    @Column(column = COL_LAST_NAME, notNull = true)
+    @Column(name = COL_LAST_NAME, notNull = true)
     private String lastName;
-    @Column(column = COL_LECTURER_ID, primaryKey = true, notNull = true)
+    @Column(name = COL_LECTURER_ID, primaryKey = true, notNull = true)
     private String lecturerId;
-    @Column(column = COL_CREATED_DATE, notNull = true)
+    @Column(name = COL_CREATED_DATE, notNull = true)
     private long createdDate;
-    @Column(column = COL_MODIFIED_DATE, notNull = true)
+    @Column(name = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
 
     @Table(name = TABLE_NAME)

@@ -17,24 +17,23 @@ public class Subject {
 
     //@DbField(column = COL_ID, primaryKey = true, autoIncrement = true)
     private long _id;
-    @Column(column = COL_SUBJECT_ID, primaryKey = true, notNull = true)
+    @Column(name = COL_SUBJECT_ID, primaryKey = true, notNull = true)
     private String subjectId;
-    @Column(column = COL_TITLE, notNull = true)
+    @Column(name = COL_TITLE, notNull = true)
     private String title;
-    @Column(column = COL_CREATED_DATE, notNull = true)
+    @Column(name = COL_CREATED_DATE, notNull = true)
     private long createdDate;
-    @Column(column = COL_MODIFIED_DATE, notNull = true)
+    @Column(name = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
-    // extra dummy fields
-    @Column(column = "dummy1")
+    @Column(name = "dummy1")
     private String dummy1;
-    @Column(column = "dummy2")
+    @Column(name = "dummy2")
     private String dummy2;
-    @Column(column = "dummy3")
+    @Column(name = "dummy3")
     private String dummy3;
-    @Column(column = "dummy4")
+    @Column(name = "dummy4")
     private String dummy4;
-    @Column(column = "dummy5")
+    @Column(name = "dummy5")
     private String dummy5;
 
     @Table(name = TABLE_NAME)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 Ingenious Lab
+ * Copyright 2015 Gusterwoei
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
     public abstract void onUpgradeDb(SQLiteDatabase db, int newVersion);
 
 
-    protected void createSchemaFor(Class<?> cls, SQLiteDatabase db) {
+    public void createSchemaFor(Class<?> cls, SQLiteDatabase db) {
         StringBuilder schema = new StringBuilder();
 
         // get constructors
@@ -103,16 +103,17 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
         // get table columns
         if(table != null) {
             List<Field> allFields = getInheritedDbFields(cls);
+            List<String> uniqueColumns = new ArrayList<>();
             try {
                 int count = 0;
-                String str = "";
+                //String str = "";
                 for(Field f : allFields) {
                     f.setAccessible(true);
 
                     Class fieldType = f.getType();
                     Column df = f.getAnnotation(Column.class);
                     if(df != null) {
-                        str = df.column() + " "; // get column name
+                        String str = df.name() + " "; // get column name
 
                         // get column type
                         if(fieldType.equals(String.class)) {
@@ -143,6 +144,10 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
                         if(df.notNull())
                             str += "NOT NULL ";
 
+                        // unique column
+                        if(df.unique())
+                            uniqueColumns.add(df.name());
+
                         if(count < allFields.size() - 1) {
                             str += ", ";
                         }
@@ -151,6 +156,19 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
                     }
 
                     count++;
+                }
+
+                // add unique columns
+                if(!uniqueColumns.isEmpty()) {
+                    String str = ", UNIQUE(";
+                    for(int i=0; i<uniqueColumns.size(); i++) {
+                        String col = uniqueColumns.get(i);
+                        str += col;
+                        if(i < uniqueColumns.size()-1)
+                            str += ", ";
+                    }
+                    str += ")";
+                    schema.append(str);
                 }
 
                 // add primary key(s)

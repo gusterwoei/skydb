@@ -1,6 +1,7 @@
 package com.guster.sqlitecreator.sample;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
     private MySpinnerAdapter<Lecturer> lecturerAdapter;
     private MySpinnerAdapter<Subject> subjectAdapter;
     private Button btnConfirm;
+    private View progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,7 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
         lecturerSpinner = (Spinner) findViewById(R.id.spinner_lecturer);
         subjectSpinner = (Spinner) findViewById(R.id.spinner_subject);
         btnConfirm = (Button) findViewById(R.id.btn_add);
+        progressBar = findViewById(R.id.progress_bar);
 
         btnConfirm.setOnClickListener(this);
 
@@ -50,7 +54,7 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
             getSupportActionBar().setDisplayShowTitleEnabled(true);
         }
 
-        setFormData();
+        loadFormData();
     }
 
     @Override
@@ -63,8 +67,28 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
         return super.onOptionsItemSelected(item);
     }
 
-    private void setFormData() {
-        List<Student> students = getStudentRepository().findAll();
+    private void loadFormData() {
+        new AsyncTask<Void, Void, List<Student>>() {
+            @Override
+            protected void onPreExecute() {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            protected List<Student> doInBackground(Void... voids) {
+                return getStudentRepository().findAll();
+            }
+
+            @Override
+            protected void onPostExecute(List<Student> students) {
+                progressBar.setVisibility(View.GONE);
+                setFormData(students);
+            }
+        }.execute();
+
+    }
+
+    private void setFormData(List<Student> students) {
         studentAdapter = new MySpinnerAdapter<Student>(getApplicationContext(), students) {
             @Override
             public View getView(int i, Student item, View view, ViewGroup parent) {

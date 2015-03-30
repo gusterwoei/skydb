@@ -3,6 +3,7 @@ package com.guster.sqlitecreator.sample;
 import android.content.Context;
 import android.util.Log;
 
+import com.guster.sqlitecreator.Repository;
 import com.guster.sqlitecreator.sample.dao.LecturerRepository;
 import com.guster.sqlitecreator.sample.dao.StudentRepository;
 import com.guster.sqlitecreator.sample.dao.SubjectRepository;
@@ -23,7 +24,8 @@ public class DataContentProvider {
 
         // Subject
         SubjectRepository subjectRepository = new SubjectRepository(context);
-        String[] titles = {"Artificial Intelligence", "Project Management"};
+        String[] titles = {"Artificial Intelligence", "Project Management",
+                "Art of Communication", "Theory of Computation", "Foundation Engineering", "Political Mind"};
         for(int i=0; i<titles.length; i++) {
             Subject subject = new Subject();
             subject.setTitle(titles[i]);
@@ -35,8 +37,8 @@ public class DataContentProvider {
 
         // students
         StudentRepository studentRepository = new StudentRepository(context);
-        String[] studentFnames = {"Koby", "Main"};
-        String[] studentLnames = {"Ryan", "Keith"};
+        String[] studentFnames = {"Koby", "Main", "Eric", "Charlie", "Brett", "Jimmy"};
+        String[] studentLnames = {"Ryan", "Keith", "Claptin", "Factory", "Jackson", "Light"};
         for(int i=0; i<studentFnames.length; i++) {
             Student student = new Student();
             student.setStudentId("UAMSTU0" + i);
@@ -44,7 +46,7 @@ public class DataContentProvider {
             student.setFirstName(studentFnames[i]);
             student.setLastName(studentLnames[i]);
             student.setGender("M");
-            student.setGpa(2.01 + i);
+            student.setGpa(2.01 + 0.1);
             student.setCreatedDate(time);
             student.setModifiedDate(time);
             studentRepository.save(student);
@@ -52,8 +54,8 @@ public class DataContentProvider {
 
         // lecturers
         LecturerRepository lecturerRepository = new LecturerRepository(context);
-        String[] lecturerFnames = {"Lim", "Core"};
-        String[] lecturerLnames = {"Pricelle", "Simon"};
+        String[] lecturerFnames = {"Lim", "Core", "Tora", "Shanks", "Mike", "Navi Shan'h"};
+        String[] lecturerLnames = {"Pricelle", "Simon", "Yamato", "Yes", "Chang", "Carl"};
         for(int i=0; i<lecturerFnames.length; i++) {
             Lecturer lecturer = new Lecturer();
             lecturer.setLecturerId("LEC0" + i);
@@ -85,21 +87,19 @@ public class DataContentProvider {
         // test single
         /*Log.d("ABC", "executing single-row insert...");
         long singleCurrentTime1 = System.currentTimeMillis();
-        //Repository.beginTransaction();
+        Repository.beginTransaction();
         for(int i=0; i<subjects.size(); i++) {
             Subject subject = subjects.get(i);
             subjectRepository.save(subject);
         }
-        //Repository.endTransaction();
+        Repository.endTransaction();
         long singleCurrentTime2 = System.currentTimeMillis();
         Log.d("ABC", "SINGLE-ROW INSERT TIME - " + (singleCurrentTime2 - singleCurrentTime1));*/
 
         // test multiple
         Log.d("ABC", "executing multiple-row insert...");
         long multipleCurrentTime1 = System.currentTimeMillis();
-        SubjectRepository.beginTransaction();
         subjectRepository.saveAll(subjects);
-        SubjectRepository.endTransaction();
         long multipleCurrentTime2 = System.currentTimeMillis();
         Log.d("ABC", "MULTIPLE-ROW INSERT TIME - " + (multipleCurrentTime2 - multipleCurrentTime1));
     }

@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.guster.sqlitecreator.sample.domain.Attendance;
+import com.guster.sqlitecreator.sample.domain.Subject;
 import com.guster.sqlitecreator.sample.list.BaseViewHolder;
 import com.guster.sqlitecreator.sample.list.StandardListAdapter;
 
@@ -46,7 +47,6 @@ public class MainActivity extends BaseActivity {
     private void setFormData() {
         // get data
         List<Attendance> attendances = getAttendanceRepository().findAll();
-        Log.d("ABC", "attendances size = " + attendances.size());
 
         listAdapter = new StandardListAdapter<Attendance>(getApplicationContext(), R.layout.listitem_item, attendances) {
             @Override
@@ -105,6 +105,10 @@ public class MainActivity extends BaseActivity {
             getSubjectRepository().findAll();
             long time2 = System.currentTimeMillis();
             Log.d("ABC", "Fetch time = " + (time2 - time1));
+        }
+        else if(id == R.id.action_analyze) {
+            Log.d("ABC", "Running analyze");
+            getSubjectRepository().runQuery("ANALYZE");
         }
 
         return super.onOptionsItemSelected(item);

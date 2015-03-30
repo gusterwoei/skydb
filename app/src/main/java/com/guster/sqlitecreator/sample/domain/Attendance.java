@@ -16,17 +16,17 @@ public class Attendance {
     public static final String COL_CREATED_DATE = "createdDate";
     public static final String COL_MODIFIED_DATE = "modifiedDate";
 
-    @Column(column = COL_ID, primaryKey = true, autoIncrement = true)
+    @Column(name = COL_ID, primaryKey = true, autoIncrement = true)
     private long _id;
-    @Column(column = COL_LECTURER_ID, notNull = true, saveCriteria = true)
+    @Column(name = COL_LECTURER_ID, notNull = true, unique = true)
     private String lecturerId;
-    @Column(column = COL_STUDENT_ID, notNull = true, saveCriteria = true)
+    @Column(name = COL_STUDENT_ID, notNull = true, unique = true)
     private String studentId;
-    @Column(column = COL_SUBJECT_ID, notNull = true, saveCriteria = true)
+    @Column(name = COL_SUBJECT_ID, notNull = true, unique = true)
     private String subjectId;
-    @Column(column = COL_CREATED_DATE, notNull = true)
+    @Column(name = COL_CREATED_DATE, notNull = true)
     private long createdDate;
-    @Column(column = COL_MODIFIED_DATE, notNull = true)
+    @Column(name = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
 
     private String subjectName;
