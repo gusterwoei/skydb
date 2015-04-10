@@ -53,7 +53,7 @@ public abstract class Repository<T> {
 
     public Repository(Context context, Class<T> type) {
         this.context = context;
-        db = DatabaseCreator.getInstance().createDatabase();
+        db = GusterDatabase.getInstance().createDatabase();
         this.classType = type;
         init(classType);
     }

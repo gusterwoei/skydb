@@ -33,16 +33,17 @@ import java.util.List;
 /**
  * Created by Gusterwoei on 10/3/14.
  */
-public abstract class DatabaseCreator extends SQLiteOpenHelper {
+public abstract class GusterDatabase extends SQLiteOpenHelper {
     private static final String SQL_ON_FOREIGN_KEY = "PRAGMA foreign_keys=ON;";
     private static final String SQL_SYNC_MODE_NORMAL = "PRAGMA synchronous=OFF";
 
     // data
     private static Context context;
     private static SQLiteDatabase sqLiteDatabase;
-    private static DatabaseCreator mInglabSqliteOpenHelper;
+    private static GusterDatabase mInglabSqliteOpenHelper;
+    private static DatabaseHelper databaseHelper;
 
-    public DatabaseCreator(Context context, String databaseName, Integer databaseVersion) {
+    public GusterDatabase(Context context, String databaseName, Integer databaseVersion) {
         super(context.getApplicationContext(), databaseName, null, databaseVersion);
         initialize(context);
     }
@@ -50,13 +51,11 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
     private void initialize(Context ctx) {
         context = ctx.getApplicationContext();
         if(mInglabSqliteOpenHelper == null) {
-            mInglabSqliteOpenHelper = getDatabase();
+            mInglabSqliteOpenHelper = this;
         }
     }
 
-    protected abstract DatabaseCreator getDatabase();
-
-    public static DatabaseCreator getInstance() {
+    public static GusterDatabase getInstance() {
         return mInglabSqliteOpenHelper;
     }
 
@@ -64,28 +63,28 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
         db.execSQL(SQL_SYNC_MODE_NORMAL);
-        onOpenDb(db);
     }
-    public abstract void onOpenDb(SQLiteDatabase db);
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        onCreateDb(db);
+        if(databaseHelper == null)
+            databaseHelper = new DatabaseHelper(db);
+        onCreate(db, databaseHelper);
     }
-    public abstract void onCreateDb(SQLiteDatabase db);
+    public abstract void onCreate(SQLiteDatabase db, DatabaseHelper dbHelper);
 
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i2) {
         for(int version = 1; version <= i2; version++) {
-            onUpgradeDb(db, i2);
+            onMigrate(db, i2, databaseHelper);
         }
     }
-    public abstract void onUpgradeDb(SQLiteDatabase db, int newVersion);
+    public abstract void onMigrate(SQLiteDatabase db, int version, DatabaseHelper creator);
 
 
-    public void createSchemaFor(Class<?> cls, SQLiteDatabase db) {
+    private void createTable(Class<?> cls, SQLiteDatabase db) {
         StringBuilder schema = new StringBuilder();
 
         // get constructors
@@ -171,21 +170,6 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
                     schema.append(str);
                 }
 
-                // add primary key(s)
-                /*if(primaryKeyCols.size() > 0) {
-                    str += ", ";
-                    str += "PRIMARY KEY (";
-                    for(int i=0; i<primaryKeyCols.size(); i++) {
-                        String keyCol = primaryKeyCols.get(i);
-                        str += keyCol;
-
-                        if(i < primaryKeyCols.size() - 1) {
-                            str += ", ";
-                        }
-                    }
-                    str += ")";
-                }*/
-
                 // close bracket
                 schema.append(")");
 
@@ -201,7 +185,7 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
         db.execSQL(schema.toString());
     }
 
-    public void deleteSchema(Class<?> cls) {
+    private void deleteTable(Class<?> cls, SQLiteDatabase db) {
         // get table name
         Table table = cls.getAnnotation(Table.class);
         if(table != null) {
@@ -236,5 +220,28 @@ public abstract class DatabaseCreator extends SQLiteOpenHelper {
             }
         }
         return fields;
+    }
+
+
+    /**
+     * Database Helper
+     */
+    protected class DatabaseHelper {
+        private SQLiteDatabase db;
+        public DatabaseHelper(SQLiteDatabase db) {
+            this.db = db;
+        }
+
+        public void createTable(Class<?> cls) {
+            GusterDatabase.this.createTable(cls, db);
+        }
+
+        private void alterTable(Class<?> cls) {
+            // todo: coming soon
+        }
+
+        public void deleteTable(Class<?> cls) {
+            GusterDatabase.this.deleteTable(cls, db);
+        }
     }
 }

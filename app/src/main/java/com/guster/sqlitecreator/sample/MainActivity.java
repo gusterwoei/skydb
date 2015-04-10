@@ -1,31 +1,26 @@
 package com.guster.sqlitecreator.sample;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.internal.widget.ViewUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.guster.sqlitecreator.SqlBuilder;
 import com.guster.sqlitecreator.sample.domain.Attendance;
-import com.guster.sqlitecreator.sample.domain.Subject;
-import com.guster.sqlitecreator.sample.list.BaseViewHolder;
 import com.guster.sqlitecreator.sample.list.StandardListAdapter;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
 import java.util.List;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
     private ListView listData;
     private StandardListAdapter<Attendance> listAdapter;
 
@@ -68,6 +63,25 @@ public class MainActivity extends BaseActivity {
         };
 
         listData.setAdapter(listAdapter);
+        listData.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        final Attendance att = listAdapter.getItem(i);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Delete Attendance");
+        dialog.setMessage("Do you want to delete " + att.getSubjectName() + ", taught by " + att.getLecturerName() +
+        ", attended by " + att.getStudentName() + "?");
+        dialog.setNegativeButton("Cancel", null);
+        dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                getAttendanceRepository().delete(att);
+                setFormData();
+            }
+        });
+        dialog.create().show();
     }
 
     @Override

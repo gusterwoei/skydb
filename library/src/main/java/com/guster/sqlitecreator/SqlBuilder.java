@@ -31,6 +31,7 @@ public class SqlBuilder {
     private StringBuilder insertQuery = new StringBuilder();
     private StringBuilder updateQuery = new StringBuilder();
     private StringBuilder deleteQuery = new StringBuilder();
+    private StringBuilder alterQuery = new StringBuilder();
     private HashMap<String, Object> bindValues = new HashMap<String, Object>();
 
     private SqlBuilder() {}
@@ -278,6 +279,21 @@ public class SqlBuilder {
         return groupBy(col);
     }
 
+    public SqlBuilder alterTable(String table) {
+        alterQuery.append("ALTER TABLE " + table);
+        return this;
+    }
+
+    public SqlBuilder renameTo(String tableName) {
+        alterQuery.append(" RENAME TO " + tableName);
+        return this;
+    }
+
+    public SqlBuilder addColumn(String column, String columnType) {
+        alterQuery.append(" ADD COLUMN " + column + " " + columnType);
+        return this;
+    }
+
     /*public static String getInsertStmnt(String tableName, Object ... vals) {
         String stmnt = "INSERT INTO " + tableName + " VALUES (";
         for(int i=0; i<vals.length; i++) {
@@ -405,6 +421,9 @@ public class SqlBuilder {
         sb.append(groupQuery.toString());
         sb.append(space);
         sb.append(orderQuery.toString());
+        if(alterQuery.length() > 0) {
+            sb.append(alterQuery);
+        }
 
         query = sb.toString();
         bindQueryValues();
@@ -429,7 +448,8 @@ public class SqlBuilder {
             String var = entry.getKey();
             Object value = entry.getValue();
             String val = (value != null)? DatabaseUtils.sqlEscapeString(value + "") : "null";
-            query = query.replaceAll(var, val);
+            query = query.replaceAll(":"+var, val);
+            //query = query.replaceAll(var, val);
         }
     }
 
