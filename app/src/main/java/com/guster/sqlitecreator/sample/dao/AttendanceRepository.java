@@ -2,6 +2,7 @@ package com.guster.sqlitecreator.sample.dao;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.guster.sqlitecreator.Repository;
 import com.guster.sqlitecreator.SqlBuilder;

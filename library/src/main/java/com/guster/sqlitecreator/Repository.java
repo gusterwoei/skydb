@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.guster.sqlitecreator.annotation.Column;
 import com.guster.sqlitecreator.annotation.Table;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -53,7 +52,7 @@ public abstract class Repository<T> {
 
     public Repository(Context context, Class<T> type) {
         this.context = context;
-        db = GusterDatabase.getInstance().createDatabase();
+        db = SkyDatabase.getInstance().createDatabase();
         this.classType = type;
         init(classType);
     }
@@ -84,7 +83,12 @@ public abstract class Repository<T> {
     private void init(Class<?> cls) {
         // if tableName is null, loop through T's constructors and get it
         if(TABLE_NAME == null) {
-            Constructor[] constructors = cls.getDeclaredConstructors();
+            Table table = cls.getAnnotation(Table.class);
+            if(table != null) {
+                // get table name
+                TABLE_NAME = table.name();
+            }
+            /*Constructor[] constructors = cls.getDeclaredConstructors();
             for(Constructor cont : constructors) {
                 Table table = (Table) cont.getAnnotation(Table.class);
                 if(table != null) {
@@ -92,7 +96,7 @@ public abstract class Repository<T> {
                     TABLE_NAME =  table.name();
                     break;
                 }
-            }
+            }*/
         }
 
         // initialize all columns and its fields
@@ -222,7 +226,6 @@ public abstract class Repository<T> {
         return null;
     }
 
-    //protected abstract ContentValues getFields(T t);
     protected ContentValues getFields(final T t) {
         final ContentValues values = new ContentValues();
         forEachDbField(t, new OnEachFieldListener() {

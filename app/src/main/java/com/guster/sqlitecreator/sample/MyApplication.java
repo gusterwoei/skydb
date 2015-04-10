@@ -13,8 +13,8 @@ public class MyApplication extends Application {
         super.onCreate();
 
         // create db
-        MyDatabase dbHelper = new MyDatabase(this, "sqliteCreator.db", 1);
-        dbHelper.createDatabase();
+        MyDatabase myDatabase = new MyDatabase(this, "sqliteCreator.db", 1);
+        myDatabase.createDatabase();
 
         // load dummy data
         DataContentProvider.loadDummyData(this);

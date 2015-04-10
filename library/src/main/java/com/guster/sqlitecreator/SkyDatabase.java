@@ -20,10 +20,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.guster.sqlitecreator.annotation.Column;
 import com.guster.sqlitecreator.annotation.Table;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -33,17 +31,17 @@ import java.util.List;
 /**
  * Created by Gusterwoei on 10/3/14.
  */
-public abstract class GusterDatabase extends SQLiteOpenHelper {
+public abstract class SkyDatabase extends SQLiteOpenHelper {
     private static final String SQL_ON_FOREIGN_KEY = "PRAGMA foreign_keys=ON;";
     private static final String SQL_SYNC_MODE_NORMAL = "PRAGMA synchronous=OFF";
 
     // data
     private static Context context;
     private static SQLiteDatabase sqLiteDatabase;
-    private static GusterDatabase mInglabSqliteOpenHelper;
+    private static SkyDatabase mInglabSqliteOpenHelper;
     private static DatabaseHelper databaseHelper;
 
-    public GusterDatabase(Context context, String databaseName, Integer databaseVersion) {
+    public SkyDatabase(Context context, String databaseName, Integer databaseVersion) {
         super(context.getApplicationContext(), databaseName, null, databaseVersion);
         initialize(context);
     }
@@ -55,7 +53,7 @@ public abstract class GusterDatabase extends SQLiteOpenHelper {
         }
     }
 
-    public static GusterDatabase getInstance() {
+    public static SkyDatabase getInstance() {
         return mInglabSqliteOpenHelper;
     }
 
@@ -78,7 +76,7 @@ public abstract class GusterDatabase extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i2) {
         for(int version = 1; version <= i2; version++) {
-            onMigrate(db, i2, databaseHelper);
+            onMigrate(db, version, databaseHelper);
         }
     }
     public abstract void onMigrate(SQLiteDatabase db, int version, DatabaseHelper creator);
@@ -87,8 +85,13 @@ public abstract class GusterDatabase extends SQLiteOpenHelper {
     private void createTable(Class<?> cls, SQLiteDatabase db) {
         StringBuilder schema = new StringBuilder();
 
-        // get constructors
-        Table table = null;
+        // get table name from class
+        Table table = cls.getAnnotation(Table.class);
+        if(table != null) {
+            // get table name
+            schema.append("CREATE TABLE IF NOT EXISTS " + table.name() + "(");
+        }
+        /*Table table = null;
         Constructor[] constructors = cls.getDeclaredConstructors();
         for(Constructor cont : constructors) {
             table = (Table) cont.getAnnotation(Table.class);
@@ -97,7 +100,7 @@ public abstract class GusterDatabase extends SQLiteOpenHelper {
                 schema.append("CREATE TABLE IF NOT EXISTS " + table.name() + "(");
                 break;
             }
-        }
+        }*/
 
         // get table columns
         if(table != null) {
@@ -233,7 +236,7 @@ public abstract class GusterDatabase extends SQLiteOpenHelper {
         }
 
         public void createTable(Class<?> cls) {
-            GusterDatabase.this.createTable(cls, db);
+            SkyDatabase.this.createTable(cls, db);
         }
 
         private void alterTable(Class<?> cls) {
@@ -241,7 +244,7 @@ public abstract class GusterDatabase extends SQLiteOpenHelper {
         }
 
         public void deleteTable(Class<?> cls) {
-            GusterDatabase.this.deleteTable(cls, db);
+            SkyDatabase.this.deleteTable(cls, db);
         }
     }
 }

@@ -7,6 +7,7 @@ import com.guster.sqlitecreator.annotation.Table;
  * Created by Gusterwoei on 3/17/15.
  *
  */
+@Table(name = "lecturers")
 public class Lecturer {
     public static final String TABLE_NAME = "lecturers";
     public static final String COL_ID = "_id";
@@ -29,7 +30,6 @@ public class Lecturer {
     @Column(name = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
 
-    @Table(name = TABLE_NAME)
     public Lecturer() {}
 
     public long get_id() {

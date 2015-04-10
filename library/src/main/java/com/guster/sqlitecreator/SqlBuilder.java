@@ -21,17 +21,7 @@ import java.util.Map;
 public class SqlBuilder {
     private String clauseDivider = "\n";
     private String query = "";
-    private StringBuilder selectQuery = new StringBuilder();
-    private StringBuilder fromQuery = new StringBuilder();
-    private StringBuilder whereQuery = new StringBuilder();
-    private StringBuilder innerJoinQuery = new StringBuilder();
-    private StringBuilder leftJoinQuery = new StringBuilder();
-    private StringBuilder orderQuery = new StringBuilder();
-    private StringBuilder groupQuery = new StringBuilder();
-    private StringBuilder insertQuery = new StringBuilder();
-    private StringBuilder updateQuery = new StringBuilder();
-    private StringBuilder deleteQuery = new StringBuilder();
-    private StringBuilder alterQuery = new StringBuilder();
+    private StringBuilder allQuery = new StringBuilder();
     private HashMap<String, Object> bindValues = new HashMap<String, Object>();
 
     private SqlBuilder() {}
@@ -52,6 +42,8 @@ public class SqlBuilder {
      *
      */
     public void setClauseDivider(String clauseDivider) {
+        if(clauseDivider == null || clauseDivider.isEmpty())
+            clauseDivider = "\n";
         this.clauseDivider = clauseDivider;
     }
 
@@ -63,10 +55,11 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder select(String ... args) {
-        if(selectQuery.length() == 0) {
+        allQuery.append("SELECT " + arrayToString(args));
+        /*if(selectQuery.length() == 0) {
             selectQuery.append("SELECT ");
         }
-        selectQuery.append(arrayToString(args));
+        selectQuery.append(arrayToString(args));*/
         return this;
     }
 
@@ -78,11 +71,16 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder addSelect(String ... args) {
-        if(selectQuery.length() == 0) {
+        if(allQuery.length() == 0) {
+            return select(args);
+        }
+        allQuery.append(", ");
+        allQuery.append(arrayToString(args));
+        /*if(selectQuery.length() == 0) {
             return select(args);
         }
         selectQuery.append(", ");
-        selectQuery.append(arrayToString(args));
+        selectQuery.append(arrayToString(args));*/
         return this;
     }
 
@@ -95,10 +93,12 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder from(String tableName, String alias) {
-        if(fromQuery.length() == 0) {
+        allQuery.append(clauseDivider);
+        allQuery.append("FROM " + tableName + " " + alias);
+        /*if(fromQuery.length() == 0) {
             fromQuery.append("FROM ");
         }
-        fromQuery.append(tableName + " " + alias);
+        fromQuery.append(tableName + " " + alias);*/
         return this;
     }
 
@@ -110,10 +110,12 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder where(String where) {
-        if(whereQuery.length() == 0) {
+        allQuery.append(clauseDivider);
+        allQuery.append("WHERE " + where);
+        /*if(whereQuery.length() == 0) {
             whereQuery.append("WHERE ");
         }
-        whereQuery.append(where);
+        whereQuery.append(where);*/
         return this;
     }
 
@@ -125,9 +127,10 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder orWhere(String where) {
-        if(whereQuery.length() > 0)
+        allQuery.append(" OR " + where + " ");
+        /*if(whereQuery.length() > 0)
             whereQuery.append(" ");
-        whereQuery.append("OR " + where);
+        whereQuery.append("OR " + where);*/
         return this;
     }
 
@@ -139,9 +142,10 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder andWhere(String where) {
-        if(whereQuery.length() > 0)
+        allQuery.append(" AND " + where + " ");
+        /*if(whereQuery.length() > 0)
             whereQuery.append(" ");
-        whereQuery.append("AND " + where);
+        whereQuery.append("AND " + where);*/
         return this;
     }
 
@@ -155,10 +159,13 @@ public class SqlBuilder {
      * @return SqlBuilder
      */
     public SqlBuilder innerJoin(String fromAlias, String joinTableName, String joinTableAlias, String condition) {
-        if(innerJoinQuery.length() != 0)
+        allQuery.append(clauseDivider);
+        String q = "INNER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
+        allQuery.append(q);
+        /*if(innerJoinQuery.length() != 0)
             innerJoinQuery.append(clauseDivider);
         String q = "INNER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
-        innerJoinQuery.append(q);
+        innerJoinQuery.append(q);*/
         return this;
     }
 
@@ -186,10 +193,13 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder leftJoin(String fromAlias, String joinTableName, String joinTableAlias, String condition) {
-        if(leftJoinQuery.length() != 0)
+        allQuery.append(clauseDivider);
+        String q = "LEFT OUTER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
+        allQuery.append(q);
+        /*if(leftJoinQuery.length() != 0)
             leftJoinQuery.append(clauseDivider);
         String q = "LEFT OUTER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
-        leftJoinQuery.append(q);
+        leftJoinQuery.append(q);*/
         return this;
     }
 
@@ -227,10 +237,18 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder orderBy(String col, boolean desc) {
-        if(orderQuery.length() == 0) {
+        allQuery.append(clauseDivider);
+        allQuery.append("ORDER BY ");
+        allQuery.append(col + (desc ? " DESC" : ""));
+        /*if(orderQuery.length() == 0) {
             orderQuery.append("ORDER BY ");
         }
-        orderQuery.append(col + (desc? " DESC" : ""));
+        orderQuery.append(col + (desc? " DESC" : ""));*/
+        return this;
+    }
+
+    public SqlBuilder addOrderBy(String col) {
+        allQuery.append(", " + col);
         return this;
     }
 
@@ -243,10 +261,13 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder addOrderBy(String col, boolean desc) {
-        if(orderQuery.length() == 0)
+        allQuery.append(", ");
+        allQuery.append(col + (desc? " DESC" : ""));
+        /*if(orderQuery.length() == 0)
             return orderBy(col, desc);
         orderQuery.append(", ");
-        return orderBy(col, desc);
+        return orderBy(col, desc);*/
+        return this;
     }
 
     /**
@@ -257,10 +278,12 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder groupBy(String col) {
-        if(groupQuery.length() == 0) {
+        allQuery.append(clauseDivider);
+        allQuery.append("GROUP BY " + col);
+        /*if(groupQuery.length() == 0) {
             groupQuery.append("GROUP BY ");
         }
-        groupQuery.append(col);
+        groupQuery.append(col);*/
         return this;
     }
 
@@ -272,25 +295,27 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder addGroupBy(String col) {
-        if(groupQuery.length() == 0) {
+        allQuery.append(", " + col);
+        /*if(groupQuery.length() == 0) {
             return groupBy(col);
         }
-        groupQuery.append(", ");
-        return groupBy(col);
+        groupQuery.append(", ");*/
+        //return groupBy(col);
+        return this;
     }
 
     public SqlBuilder alterTable(String table) {
-        alterQuery.append("ALTER TABLE " + table);
+        allQuery.append("ALTER TABLE " + table);
         return this;
     }
 
     public SqlBuilder renameTo(String tableName) {
-        alterQuery.append(" RENAME TO " + tableName);
+        allQuery.append(" RENAME TO " + tableName);
         return this;
     }
 
     public SqlBuilder addColumn(String column, String columnType) {
-        alterQuery.append(" ADD COLUMN " + column + " " + columnType);
+        allQuery.append(" ADD COLUMN " + column + " " + columnType);
         return this;
     }
 
@@ -343,7 +368,8 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder update(String tableName) {
-        updateQuery.append("UPDATE " + tableName);
+        allQuery.append("UPDATE " + tableName + " ");
+        //updateQuery.append("UPDATE " + tableName);
         return this;
     }
 
@@ -356,9 +382,10 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder set(String key, String value) {
-        if(updateQuery.length() > 0)
+        allQuery.append("SET " + key + " = " + DatabaseUtils.sqlEscapeString(value));
+        /*if(updateQuery.length() > 0)
             updateQuery.append(" ");
-        updateQuery.append("SET " + key + " = " + value);
+        updateQuery.append("SET " + key + " = " + value);*/
         return this;
     }
 
@@ -370,7 +397,8 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder delete(String tableName) {
-        deleteQuery.append("DELETE FROM " + tableName);
+        allQuery.append("DELETE FROM " + tableName);
+        //deleteQuery.append("DELETE FROM " + tableName);
         return this;
     }
 
@@ -382,8 +410,9 @@ public class SqlBuilder {
      * @param value - value to replace, nullable
      *
      */
-    public void bindValue(String var, Object value) {
+    public SqlBuilder bindValue(String var, Object value) {
         bindValues.put(var, value);
+        return this;
     }
 
     /**
@@ -395,38 +424,12 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder build() {
-        StringBuilder sb = new StringBuilder();
-        String space = clauseDivider;
-        sb.append(selectQuery.toString());
-        sb.append(space);
-        sb.append(fromQuery.toString());
-        sb.append(space);
-        sb.append(innerJoinQuery.toString());
-        sb.append(space);
-        sb.append(leftJoinQuery.toString());
-        if(insertQuery.length() > 0) {
-            sb.append(insertQuery.toString());
-        }
-        if(updateQuery.length() > 0) {
-            //sb.append(space);
-            sb.append(updateQuery.toString());
-        }
-        if(deleteQuery.length() > 0) {
-            //sb.append(space);
-            sb.append(deleteQuery.toString());
-        }
-        sb.append(space);
-        sb.append(whereQuery.toString());
-        sb.append(space);
-        sb.append(groupQuery.toString());
-        sb.append(space);
-        sb.append(orderQuery.toString());
-        if(alterQuery.length() > 0) {
-            sb.append(alterQuery);
-        }
-
-        query = sb.toString();
+        //query = sb.toString();
+        query = allQuery.toString();
         bindQueryValues();
+
+        // after building, clear the query string builder
+        allQuery = new StringBuilder();
 
         return this;
     }
@@ -449,7 +452,6 @@ public class SqlBuilder {
             Object value = entry.getValue();
             String val = (value != null)? DatabaseUtils.sqlEscapeString(value + "") : "null";
             query = query.replaceAll(":"+var, val);
-            //query = query.replaceAll(var, val);
         }
     }
 
