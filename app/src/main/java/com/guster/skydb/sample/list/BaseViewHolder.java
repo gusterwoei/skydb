@@ -1,4 +1,4 @@
-package com.guster.sqlitecreator.sample.list;
+package com.guster.skydb.sample.list;
 
 /**
  * Created by Gusterwoei on 1/19/15.

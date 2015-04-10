@@ -1,11 +1,9 @@
-package com.guster.sqlitecreator.sample;
+package com.guster.skydb.sample;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.internal.widget.ViewUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,9 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.guster.sqlitecreator.SqlBuilder;
-import com.guster.sqlitecreator.sample.domain.Attendance;
-import com.guster.sqlitecreator.sample.list.StandardListAdapter;
+import com.guster.skydb.sample.domain.Attendance;
+import com.guster.skydb.sample.list.StandardListAdapter;
 import java.util.List;
 
 public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
@@ -27,14 +24,14 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(com.guster.skydb.sample.R.layout.activity_main);
 
         if(getSupportActionBar() != null) {
             getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
-        listData = (ListView) findViewById(R.id.list_data);
+        listData = (ListView) findViewById(com.guster.skydb.sample.R.id.list_data);
 
         setFormData();
     }
@@ -43,12 +40,12 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         // get data
         List<Attendance> attendances = getAttendanceRepository().findAll();
 
-        listAdapter = new StandardListAdapter<Attendance>(getApplicationContext(), R.layout.listitem_item, attendances) {
+        listAdapter = new StandardListAdapter<Attendance>(getApplicationContext(), com.guster.skydb.sample.R.layout.listitem_item, attendances) {
             @Override
             public View getView(int i, Attendance item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
-                TextView txtStudent = (TextView) view.findViewById(R.id.txt_student);
-                TextView txtLecturer = (TextView) view.findViewById(R.id.txt_lecturer);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
+                TextView txtStudent = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_student);
+                TextView txtLecturer = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_lecturer);
                 txtTitle.setText(item.getSubjectName());
                 txtStudent.setText(item.getStudentName());
                 txtLecturer.setText(item.getLecturerName());
@@ -87,7 +84,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(com.guster.skydb.sample.R.menu.main, menu);
         return true;
     }
 
@@ -96,31 +93,31 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == com.guster.skydb.sample.R.id.action_settings) {
             return true;
         }
-        else if(id == R.id.action_debug) {
+        else if(id == com.guster.skydb.sample.R.id.action_debug) {
             saveDbToSdCard("sqliteCreator.db");
         }
-        else if(id == R.id.action_add) {
+        else if(id == com.guster.skydb.sample.R.id.action_add) {
             startActivityForResult(new Intent(this, NewAttendanceActivity.class), 99);
         }
-        else if(id == R.id.action_delete) {
+        else if(id == com.guster.skydb.sample.R.id.action_delete) {
             Log.d("ABC", "Deleting all subjects...");
             getSubjectRepository().deleteAll();
         }
-        else if(id == R.id.action_insert) {
+        else if(id == com.guster.skydb.sample.R.id.action_insert) {
             Log.d("ABC", "Inserting all subjects...");
             DataContentProvider.testDbInsertPerformance(getApplicationContext());
         }
-        else if(id == R.id.action_fetch) {
+        else if(id == com.guster.skydb.sample.R.id.action_fetch) {
             Log.d("ABC", "Fetching all subjects...");
             long time1 = System.currentTimeMillis();
             getSubjectRepository().findAll();
             long time2 = System.currentTimeMillis();
             Log.d("ABC", "Fetch time = " + (time2 - time1));
         }
-        else if(id == R.id.action_analyze) {
+        else if(id == com.guster.skydb.sample.R.id.action_analyze) {
             Log.d("ABC", "Running analyze");
             getSubjectRepository().runQuery("ANALYZE");
         }

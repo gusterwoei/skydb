@@ -1,15 +1,14 @@
-package com.guster.sqlitecreator.sample;
+package com.guster.skydb.sample;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.guster.sqlitecreator.SkyDatabase;
-import com.guster.sqlitecreator.SqlBuilder;
-import com.guster.sqlitecreator.sample.domain.Attendance;
-import com.guster.sqlitecreator.sample.domain.Lecturer;
-import com.guster.sqlitecreator.sample.domain.Student;
-import com.guster.sqlitecreator.sample.domain.Subject;
+import com.guster.skydb.SkyDatabase;
+import com.guster.skydb.SqlBuilder;
+import com.guster.skydb.sample.domain.Attendance;
+import com.guster.skydb.sample.domain.Lecturer;
+import com.guster.skydb.sample.domain.Student;
+import com.guster.skydb.sample.domain.Subject;
 
 /**
  * Created by Gusterwoei on 3/17/15.

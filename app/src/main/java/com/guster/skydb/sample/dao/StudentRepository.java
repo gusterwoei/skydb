@@ -1,8 +1,8 @@
-package com.guster.sqlitecreator.sample.dao;
+package com.guster.skydb.sample.dao;
 
 import android.content.Context;
-import com.guster.sqlitecreator.Repository;
-import com.guster.sqlitecreator.sample.domain.Student;
+import com.guster.skydb.Repository;
+import com.guster.skydb.sample.domain.Student;
 
 /**
  * Created by Gusterwoei on 3/17/15.

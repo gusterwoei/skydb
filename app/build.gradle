@@ -5,7 +5,7 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "com.guster.sqlitecreator.sample"
+        applicationId "com.guster.skydb.sample"
         minSdkVersion 16
         targetSdkVersion 21
         versionCode 1

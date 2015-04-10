@@ -1,24 +1,22 @@
-package com.guster.sqlitecreator.sample;
+package com.guster.skydb.sample;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.guster.sqlitecreator.sample.domain.Attendance;
-import com.guster.sqlitecreator.sample.domain.Lecturer;
-import com.guster.sqlitecreator.sample.domain.Student;
-import com.guster.sqlitecreator.sample.domain.Subject;
-import com.guster.sqlitecreator.sample.list.StandardListAdapter;
+import com.guster.skydb.sample.domain.Attendance;
+import com.guster.skydb.sample.domain.Lecturer;
+import com.guster.skydb.sample.domain.Student;
+import com.guster.skydb.sample.domain.Subject;
+import com.guster.skydb.sample.list.StandardListAdapter;
 
 import java.util.List;
 
@@ -39,12 +37,12 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_attendance);
-        studentSpinner = (Spinner) findViewById(R.id.spinner_student);
-        lecturerSpinner = (Spinner) findViewById(R.id.spinner_lecturer);
-        subjectSpinner = (Spinner) findViewById(R.id.spinner_subject);
-        btnConfirm = (Button) findViewById(R.id.btn_add);
-        progressBar = findViewById(R.id.progress_bar);
+        setContentView(com.guster.skydb.sample.R.layout.activity_new_attendance);
+        studentSpinner = (Spinner) findViewById(com.guster.skydb.sample.R.id.spinner_student);
+        lecturerSpinner = (Spinner) findViewById(com.guster.skydb.sample.R.id.spinner_lecturer);
+        subjectSpinner = (Spinner) findViewById(com.guster.skydb.sample.R.id.spinner_subject);
+        btnConfirm = (Button) findViewById(com.guster.skydb.sample.R.id.btn_add);
+        progressBar = findViewById(com.guster.skydb.sample.R.id.progress_bar);
 
         btnConfirm.setOnClickListener(this);
 
@@ -92,14 +90,14 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
         studentAdapter = new MySpinnerAdapter<Student>(getApplicationContext(), students) {
             @Override
             public View getView(int i, Student item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
                 txtTitle.setText(item.getFirstName() + " " + item.getLastName());
                 return view;
             }
 
             @Override
             public View getDropDownView(int position, Student item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
                 txtTitle.setText(item.getFirstName() + " " + item.getLastName());
                 return view;
             }
@@ -110,14 +108,14 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
         lecturerAdapter = new MySpinnerAdapter<Lecturer>(getApplicationContext(), lecturers) {
             @Override
             public View getView(int i, Lecturer item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
                 txtTitle.setText(item.getFirstName() + " " + item.getLastName());
                 return view;
             }
 
             @Override
             public View getDropDownView(int position, Lecturer item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
                 txtTitle.setText(item.getFirstName() + " " + item.getLastName());
                 return view;
             }
@@ -128,14 +126,14 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
         subjectAdapter = new MySpinnerAdapter<Subject>(getApplicationContext(), subjects) {
             @Override
             public View getView(int i, Subject item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
                 txtTitle.setText(item.getTitle());
                 return view;
             }
 
             @Override
             public View getDropDownView(int position, Subject item, View view, ViewGroup parent) {
-                TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+                TextView txtTitle = (TextView) view.findViewById(com.guster.skydb.sample.R.id.txt_title);
                 txtTitle.setText(item.getTitle());
                 return view;
             }
@@ -170,7 +168,7 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
     private abstract class MySpinnerAdapter<T> extends StandardListAdapter<T> {
 
         public MySpinnerAdapter(Context context, List<T> data) {
-            super(context, R.layout.listitem_simple, data);
+            super(context, com.guster.skydb.sample.R.layout.listitem_simple, data);
         }
 
         public abstract View getDropDownView(int position, T item, View view, ViewGroup parent);
@@ -180,7 +178,7 @@ public class NewAttendanceActivity extends BaseActivity implements View.OnClickL
             View view = convertView;
             if(view == null) {
                 LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.listitem_simple, parent, false);
+                view = inflater.inflate(com.guster.skydb.sample.R.layout.listitem_simple, parent, false);
             }
 
             getDropDownView(position, getItem(position), view, parent);

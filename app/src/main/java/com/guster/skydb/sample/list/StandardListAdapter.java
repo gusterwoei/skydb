@@ -1,4 +1,4 @@
-package com.guster.sqlitecreator.sample.list;
+package com.guster.skydb.sample.list;
 
 import android.content.Context;
 import android.view.LayoutInflater;

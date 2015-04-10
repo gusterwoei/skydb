@@ -1,4 +1,4 @@
-package com.guster.sqlitecreator.sample;
+package com.guster.skydb.sample;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,10 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.guster.sqlitecreator.sample.dao.AttendanceRepository;
-import com.guster.sqlitecreator.sample.dao.LecturerRepository;
-import com.guster.sqlitecreator.sample.dao.StudentRepository;
-import com.guster.sqlitecreator.sample.dao.SubjectRepository;
+import com.guster.skydb.sample.dao.AttendanceRepository;
+import com.guster.skydb.sample.dao.LecturerRepository;
+import com.guster.skydb.sample.dao.StudentRepository;
+import com.guster.skydb.sample.dao.SubjectRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,15 +40,15 @@ public class BaseActivity extends ActionBarActivity {
 
     @Override
     public void setContentView(int layoutResID) {
-        View toolbarView = getLayoutInflater().inflate(R.layout.toolbar, null);
+        View toolbarView = getLayoutInflater().inflate(com.guster.skydb.sample.R.layout.toolbar, null);
         ViewGroup root = (ViewGroup) getLayoutInflater().inflate(layoutResID, null);
         root.addView(toolbarView, 0);
         setContentView(root);
 
         // set toolbar as the action bar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(com.guster.skydb.sample.R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        toolbar.setTitleTextColor(getResources().getColor(com.guster.skydb.sample.R.color.white));
     }
 
     @Override

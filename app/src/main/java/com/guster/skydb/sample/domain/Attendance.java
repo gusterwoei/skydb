@@ -1,7 +1,7 @@
-package com.guster.sqlitecreator.sample.domain;
+package com.guster.skydb.sample.domain;
 
-import com.guster.sqlitecreator.annotation.Column;
-import com.guster.sqlitecreator.annotation.Table;
+import com.guster.skydb.annotation.Column;
+import com.guster.skydb.annotation.Table;
 
 /**
  * Created by Gusterwoei on 3/17/15.

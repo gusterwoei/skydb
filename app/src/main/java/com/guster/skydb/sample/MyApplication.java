@@ -1,4 +1,4 @@
-package com.guster.sqlitecreator.sample;
+package com.guster.skydb.sample;
 
 import android.app.Application;
 

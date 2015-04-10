@@ -1,4 +1,4 @@
-package com.guster.sqlitecreator.annotation;
+package com.guster.skydb.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

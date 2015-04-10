@@ -14,7 +14,7 @@
  limitations under the License.
  *******************************************************************************/
 
-package com.guster.sqlitecreator;
+package com.guster.skydb;
 
 /**
  * Created by user on 1/15/14.

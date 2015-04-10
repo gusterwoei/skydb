@@ -14,7 +14,7 @@
  limitations under the License.
  *******************************************************************************/
 
-package com.guster.sqlitecreator;
+package com.guster.skydb;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,9 +22,10 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import com.guster.sqlitecreator.annotation.Column;
-import com.guster.sqlitecreator.annotation.Table;
-import java.lang.reflect.Constructor;
+
+import com.guster.skydb.annotation.Column;
+import com.guster.skydb.annotation.Table;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
