@@ -13,8 +13,11 @@ dependencies {
     compile 'com.guster:skydb:1.0.1'
 }
 ...
+```
 
 ## How to use
+Follow the 3 simple steps
+
 ### 1. Create a database class
 First and foremost, you will need to create a class that extends SkyDatabase class.
 SkyDatabase is a direct subclass of SQLiteOpenHelper. Meaning that you can easily perform
