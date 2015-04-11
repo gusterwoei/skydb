@@ -13,11 +13,13 @@ import com.guster.skydb.sample.dao.AttendanceRepository;
 import com.guster.skydb.sample.dao.LecturerRepository;
 import com.guster.skydb.sample.dao.StudentRepository;
 import com.guster.skydb.sample.dao.SubjectRepository;
+import com.guster.skydb.sample.domain.Lecturer;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.util.List;
 
 /**
  * Created by kellylu on 3/18/15.

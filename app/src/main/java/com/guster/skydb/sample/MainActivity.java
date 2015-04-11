@@ -13,6 +13,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.guster.skydb.SkyDatabase;
+import com.guster.skydb.sample.dao.LecturerRepository;
 import com.guster.skydb.sample.domain.Attendance;
 import com.guster.skydb.sample.list.StandardListAdapter;
 import java.util.List;
