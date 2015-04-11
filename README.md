@@ -76,8 +76,8 @@ public class MainActivity extends FragmentActivity {
 ### 2. Create a table
 Skydb uses Java annotation to automatically create a Table. There are 2 types of Annotation:
 ```java
-#### @Table // to specify a table name
-#### @Column // to specify a column name and other constraints
+@Table // to specify a table name
+@Column // to specify a column name and other constraints
 ```
 
 ##### Example
