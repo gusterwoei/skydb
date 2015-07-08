@@ -2,6 +2,7 @@ package com.guster.skydb.sample.dao;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.guster.skydb.Repository;
 import com.guster.skydb.SqlBuilder;
@@ -31,6 +32,8 @@ public class AttendanceRepository extends Repository<Attendance> {
                 .innerJoin("a", Lecturer.TABLE_NAME, "l", "a.lecturerId = l.lecturerId")
                 .innerJoin("a", Student.TABLE_NAME, "stu", "a.studentId = stu.studentId")
                 .innerJoin("a", Subject.TABLE_NAME, "sub", "a." + Attendance.COL_SUBJECT_ID + " = sub.subjectId")
+                .where("sub.title LIKE :subjectTitle")
+                .bindValue("subjectTitle", "artificial intelligence")
                 .build();
         return cursorToList(query.getQuery(), new CursorToInstanceListener<Attendance>() {
             @Override
@@ -48,5 +51,15 @@ public class AttendanceRepository extends Repository<Attendance> {
                 return attendance;
             }
         });
+    }
+
+    public List<Attendance> findHalf() {
+        SqlBuilder query = SqlBuilder.newInstance()
+                .select("*")
+                .from(Attendance.TABLE_NAME, "a")
+                .orderBy(Attendance.COL_STUDENT_ID)
+                .limit(1, size() / 2)
+                .build();
+        return cursorToList(query.getQuery());
     }
 }

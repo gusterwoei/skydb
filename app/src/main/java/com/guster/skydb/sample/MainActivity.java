@@ -41,6 +41,14 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private void setFormData() {
         // get data
         List<Attendance> attendances = getAttendanceRepository().findAll();
+        setFormData(attendances);
+    }
+
+    private void setFormData(List<Attendance> attendances) {
+        if(listAdapter != null) {
+            listAdapter.setData(attendances);
+            return;
+        }
 
         listAdapter = new StandardListAdapter<Attendance>(getApplicationContext(), com.guster.skydb.sample.R.layout.listitem_item, attendances) {
             @Override
@@ -94,11 +102,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == com.guster.skydb.sample.R.id.action_settings) {
-            return true;
-        }
-        else if(id == com.guster.skydb.sample.R.id.action_debug) {
+        if(id == com.guster.skydb.sample.R.id.action_debug) {
             saveDbToSdCard("sqliteCreator.db");
         }
         else if(id == com.guster.skydb.sample.R.id.action_add) {
@@ -122,6 +126,10 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         else if(id == com.guster.skydb.sample.R.id.action_analyze) {
             Log.d("ABC", "Running analyze");
             getSubjectRepository().runQuery("ANALYZE");
+        }
+        else if(id == R.id.action_fetch_half) {
+            List<Attendance> list = getAttendanceRepository().findHalf();
+            setFormData(list);
         }
 
         return super.onOptionsItemSelected(item);

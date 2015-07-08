@@ -17,6 +17,7 @@
 package com.guster.skydb;
 
 import android.database.DatabaseUtils;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -417,6 +418,31 @@ public class SqlBuilder {
     }
 
     /**
+     * Append a LIMIT keyword to the query
+     *
+     * @param size the number of records to return
+     * @return SqlBuilder
+     *
+     */
+    public SqlBuilder limit(int size) {
+        allQuery.append(" LIMIT " + size);
+        return this;
+    }
+
+    /**
+     * Append a LIMIT keyword to the query
+     *
+     * @param startIndex the starting index in the cursor
+     * @param size the number of records to return
+     * @return SqlBuilder
+     *
+     */
+    public SqlBuilder limit(int startIndex, int size) {
+        allQuery.append(" LIMIT " + startIndex + "," + size);
+        return this;
+    }
+
+    /**
      * Replace a surrogate query value with the actual value,
      * the value will be escaped and wrapped in single quotes (''), except null
      *
@@ -438,7 +464,6 @@ public class SqlBuilder {
      *
      */
     public SqlBuilder build() {
-        //query = sb.toString();
         query = allQuery.toString();
         bindQueryValues();
 
@@ -465,7 +490,12 @@ public class SqlBuilder {
             String var = entry.getKey();
             Object value = entry.getValue();
             String val = (value != null)? DatabaseUtils.sqlEscapeString(value + "") : "null";
-            query = query.replaceAll(":"+var, val);
+
+            if(var.charAt(0) == ':') {
+                var = var.replaceFirst(":", "");
+            }
+            //query = query.replaceAll(":"+var, val);
+            query = query.replaceAll("(\\s)"+":"+var+"(\\b)", " "+val+" ");
         }
     }
 
