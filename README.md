@@ -162,9 +162,9 @@ public class LecturerRepository extends Repository<Lecturer> {
                 .select("*")
                 .from("lecturers", "l")
                 .where("fname = :queryName")
-                .orWhere("lname = :queryName");
-        sqlBuilder.bindValue("queryName", "simon");
-        sqlBuilder.build();
+                .orWhere("lname = :queryName")
+                .bindValue("queryName", "simon")
+                .build();
         return cursorToList(sqlBuilder.getQuery());
     }
 }
