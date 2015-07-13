@@ -374,105 +374,114 @@ public abstract class Repository<T> {
     }
 
     public List<T> findBy(String col, Object val) {
-        if(val != null && val.getClass().equals(String.class)) {
-            val = "'" + val + "'";
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .where(col + " = :a1")
+                .bindValue("a1", val)
+                .build().getQuery();
+
+        return cursorToList(query);
+    }
+
+    public List<T> findBy(String[] columns, Object[] values, String orderColumn) {
+        if(columns == null || values == null) {
+            throw new IllegalArgumentException("columns and values arguments cannot be null");
+        } else if(columns.length != values.length) {
+            throw new IllegalArgumentException("columns and values size must match");
         }
 
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "WHERE " + col + " = " + val;
+        SqlBuilder builder = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t");
+        for(int i=0; i<columns.length; i++) {
+            String col = columns[i];
+            Object val = values[i];
+            String where = col + " = " + (val != null? DatabaseUtils.sqlEscapeString(val+"") : "null");
+            if(i == 0)
+                builder.where(where);
+            else
+                builder.andWhere(where);
+
+            if(orderColumn != null && !orderColumn.isEmpty()) {
+                builder.orderBy(orderColumn);
+            }
+        }
+
+        String query = builder.build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findByGroupBy(String col, Object val, String groupByCol) {
-        if(val != null && val.getClass().equals(String.class)) {
-            val = "'" + val + "'";
-        }
-
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "WHERE " + col + " = " + val + " " +
-                "GROUP BY " + groupByCol;
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .where(col + " = :a1")
+                .groupBy(groupByCol)
+                .bindValue("a1", val).build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findByOrderBy(String col, Object val, String orderByCol, boolean desc) {
-        if(val != null && val.getClass().equals(String.class)) {
-            val = "'" + val + "'";
-        }
-
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "WHERE " + col + " = " + val + " " +
-                "ORDER BY " + orderByCol + " ";
-        if(desc) {
-            query += "DESC";
-        }
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .where(col + " = :a1")
+                .orderBy(orderByCol, desc)
+                .bindValue("a1", val).build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findByGroupByOrderBy(String col, Object val, String groupByCol, String orderByCol, boolean desc) {
-        if(val != null && val.getClass().equals(String.class)) {
-            val = "'" + val + "'";
-        }
-
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "WHERE " + col + " = " + val + " " +
-                "GROUP BY " + groupByCol + " " +
-                "ORDER BY " + orderByCol;
-        if(desc) {
-            query += " DESC";
-        }
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .where(col + " = :a1")
+                .groupBy(groupByCol)
+                .orderBy(orderByCol, desc)
+                .bindValue("a1", val).build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findAll() {
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME;
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t").build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findAllGroupBy(String col) {
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "GROUP BY " + col;
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .groupBy(col)
+                .build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findAllOrderBy(String col, boolean desc) {
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "ORDER BY " + col + " ";
-        if(desc) {
-            query += "DESC";
-        }
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .orderBy(col, desc)
+                .build().getQuery();
 
         return cursorToList(query);
     }
 
     public List<T> findAllGroupByOrderBy(String groupByCol, String orderByCol, boolean desc) {
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME + " " +
-                "GROUP BY " + groupByCol + " " +
-                "ORDER BY " + orderByCol + " ";
-        if(desc) {
-            query += "DESC";
-        }
+        String query = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .groupBy(groupByCol)
+                .orderBy(orderByCol, desc)
+                .build().getQuery();
 
         return cursorToList(query);
     }
@@ -541,11 +550,13 @@ public abstract class Repository<T> {
 
         // apply where clause to the query
         if(where != null) {
-            String query = "" +
-                    "SELECT * " +
-                    "FROM " + TABLE_NAME + " " +
-                    "WHERE " + where;
+            String query = SqlBuilder.newInstance()
+                    .select("*")
+                    .from(TABLE_NAME, "t")
+                    .where(where)
+                    .build().getQuery();
             return findByQuery(query);
+
         }
         return new ArrayList<T>();
     }
@@ -556,7 +567,7 @@ public abstract class Repository<T> {
             @Override
             public void onEachField(String column, Object value, Field field, Column dbField, int index) {
                 if(dbField.unique()) {
-                    wheres.add(column + " = " + DatabaseUtils.sqlEscapeString((String) value));
+                    wheres.add(column + " = " + (value != null? DatabaseUtils.sqlEscapeString((String) value) : "null") );
                 }
             }
         });

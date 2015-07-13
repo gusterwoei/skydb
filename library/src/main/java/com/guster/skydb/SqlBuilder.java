@@ -497,6 +497,9 @@ public class SqlBuilder {
             //query = query.replaceAll(":"+var, val);
             query = query.replaceAll("(\\s)"+":"+var+"(\\b)", " "+val+" ");
         }
+
+        // clear the binding values after getting query
+        bindValues.clear();
     }
 
     private String arrayToString(String ... args) {

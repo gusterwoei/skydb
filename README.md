@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.guster:skydb:1.1.0'
+    compile 'com.guster:skydb:1.2.0'
 }
 ...
 ```
@@ -26,6 +26,7 @@ SkyDatabase will provide the following two functions: onCreate() and onMigrate()
 Then, use DatabaseHelper.createTable() to create an entity table.
 
 ##### Example
+
 ```java
 public class MyDatabase extends SkyDatabase {
 
@@ -59,6 +60,7 @@ public class MyDatabase extends SkyDatabase {
 }
 ```
 Create database in your app
+
 ```java
 public class MainActivity extends FragmentActivity {
     @Override
@@ -75,12 +77,14 @@ public class MainActivity extends FragmentActivity {
 
 ### 2. Create a table
 Skydb uses Java annotation to automatically create a Table. There are 2 types of Annotation:
+
 ```java
 @Table // to specify a table name
 @Column // to specify a column name and other constraints
 ```
 
 ##### Example
+
 ```java
 @Table(name = "lecturers")
 public class Lecturer {
@@ -114,6 +118,7 @@ public class Lecturer {
 Finally, you will need a DAO (Data Access Object) for each entity to read/write data from/to the database.
 Simply create a class that extends Repository.
 ##### Example
+
 ```java
 public class LecturerRepository extends Repository<Lecturer> {
     public LecturerRepository(Context context) {
@@ -126,11 +131,18 @@ public class LecturerRepository extends Repository<Lecturer> {
 ##### Example Usage
 Repository provides a list of useful methods that you can use to interact with your entity table,
 below are some examples:
+
 ```java
 LecturerRepository lecturerRepository = new LecturerRepository(getApplicationContext());
 
 // find by primary key
 Lecturer lecturer = lecturerRepository.findOne("LECID001");
+
+// find by columns that are marked as 'UNIQUE'
+Lecturer criteria = new Lecturer();
+criteria.setFirstName("Bryan");
+criteria.setLastName("Keith");
+Lecturer lecturer = lecturerRepository.findUnique(criteria);
 
 // find all lecturers
 List<Lecturer> lecturers = lecturerRepository.findAll();
@@ -150,6 +162,7 @@ lecturerRepository.delete(lecturer);
 The rest of the methods are self-explanatory, you can find in Repository.java
 
 Of course, you can always create your own method to match your requirements, for example:
+
 ```java
 public class LecturerRepository extends Repository<Lecturer> {
 

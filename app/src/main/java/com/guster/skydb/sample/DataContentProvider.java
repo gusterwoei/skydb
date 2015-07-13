@@ -3,9 +3,12 @@ package com.guster.skydb.sample;
 import android.content.Context;
 import android.util.Log;
 
+import com.guster.skydb.SqlBuilder;
+import com.guster.skydb.sample.dao.AttendanceRepository;
 import com.guster.skydb.sample.dao.LecturerRepository;
 import com.guster.skydb.sample.dao.StudentRepository;
 import com.guster.skydb.sample.dao.SubjectRepository;
+import com.guster.skydb.sample.domain.Attendance;
 import com.guster.skydb.sample.domain.Lecturer;
 import com.guster.skydb.sample.domain.Student;
 import com.guster.skydb.sample.domain.Subject;
@@ -101,5 +104,25 @@ public class DataContentProvider {
         subjectRepository.saveAll(subjects);
         long multipleCurrentTime2 = System.currentTimeMillis();
         Log.d("ABC", "MULTIPLE-ROW INSERT TIME - " + (multipleCurrentTime2 - multipleCurrentTime1));
+    }
+
+    public static void testQueryBuilder(Context context) {
+        AttendanceRepository attendanceRepository = new AttendanceRepository(context);
+        attendanceRepository.findBy(Attendance.COL_STUDENT_ID, "okman");
+        attendanceRepository.findBy(
+                new String[]{Attendance.COL_STUDENT_ID, Attendance.COL_LECTURER_ID},
+                new String[]{"stu0001", "lec0001"}, null);
+        attendanceRepository.findByOrderBy(Attendance.COL_STUDENT_ID, "stu0001", Attendance.COL_LECTURER_ID, true);
+        attendanceRepository.findAllOrderBy(Attendance.COL_LECTURER_ID, true);
+        attendanceRepository.findByGroupBy(Attendance.COL_STUDENT_ID, "stu0001", Attendance.COL_STUDENT_ID);
+        attendanceRepository.findAllGroupBy(Attendance.COL_STUDENT_ID);
+        attendanceRepository.findAllGroupByOrderBy(Attendance.COL_LECTURER_ID, Attendance.COL_CREATED_DATE, true);
+        attendanceRepository.findByGroupByOrderBy(Attendance.COL_STUDENT_ID, "stu0001", Attendance.COL_LECTURER_ID, Attendance.COL_CREATED_DATE, true);
+        attendanceRepository.findAll();
+
+        Attendance at = new Attendance();
+        at.setStudentId("stu0001");
+        at.setLecturerId("lec0001");
+        attendanceRepository.findUnique(at);
     }
 }
