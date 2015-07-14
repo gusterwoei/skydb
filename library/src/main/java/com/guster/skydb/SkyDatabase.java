@@ -121,15 +121,15 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
                         // get column type
                         if(fieldType.equals(String.class)) {
                             str += "TEXT ";
-                        } else if(fieldType.equals(Integer.TYPE)) {
+                        } else if(fieldType.equals(Integer.TYPE) || fieldType.equals(Integer.class)) {
                             str += "INTEGER ";
-                        } else if(fieldType.equals(Long.TYPE)) {
+                        } else if(fieldType.equals(Long.TYPE)  || fieldType.equals(Long.class)) {
                             str += "INTEGER ";
-                        } else if(fieldType.equals(Double.TYPE)) {
+                        } else if(fieldType.equals(Double.TYPE)  || fieldType.equals(Double.class)) {
                             str += "NUMERIC ";
-                        } else if(fieldType.equals(Float.TYPE)) {
+                        } else if(fieldType.equals(Float.TYPE)  || fieldType.equals(Float.class)) {
                             str += "NUMERIC ";
-                        } else if(fieldType.equals(Boolean.TYPE)) {
+                        } else if(fieldType.equals(Boolean.TYPE)  || fieldType.equals(Boolean.class)) {
                             str += "INTEGER ";
                         } else {
                             str += "TEXT ";
