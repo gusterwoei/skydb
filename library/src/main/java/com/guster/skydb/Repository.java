@@ -168,9 +168,15 @@ public abstract class Repository<T> {
                     switch (type) {
                         case Cursor.FIELD_TYPE_INTEGER:
                             val = cursor.getInt(colIndex);
+                            if(field.getType().equals(Long.class) || field.getType().equals(Long.TYPE)) {
+                                val = Long.parseLong(val+"");
+                            }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:
                             val = cursor.getFloat(colIndex);
+                            if(field.getType().equals(Double.class) || field.getType().equals(Double.TYPE)) {
+                                val = Double.parseDouble(val+"");
+                            }
                             break;
                         case Cursor.FIELD_TYPE_STRING:
                             val = cursor.getString(colIndex);
