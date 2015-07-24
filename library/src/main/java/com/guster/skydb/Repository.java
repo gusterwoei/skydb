@@ -277,7 +277,7 @@ public abstract class Repository<T> {
                 try {
                     Column column = f.getAnnotation(Column.class);
                     if(column.autoIncrement()) {
-                        f.setLong(newItem, id);
+                        f.set(newItem, id);
                         break;
                     }
                 } catch (IllegalAccessException e) {
