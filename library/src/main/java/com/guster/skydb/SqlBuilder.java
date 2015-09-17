@@ -170,17 +170,22 @@ public class SqlBuilder {
      * @param fromAlias - OPTIONAL, alias of a from table
      * @param joinTableName - table name to join with
      * @param joinTableAlias - alias of the joining table
-     * @param condition - the joining condition
+     * @param conditions - the joining condition, join by AND
      * @return SqlBuilder
      */
-    public SqlBuilder innerJoin(String fromAlias, String joinTableName, String joinTableAlias, String condition) {
+    public SqlBuilder innerJoin(String fromAlias, String joinTableName, String joinTableAlias, String ... conditions) {
         allQuery.append(clauseDivider);
-        String q = "INNER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
+        //String q = "INNER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
+        String q = "INNER JOIN " + joinTableName + " " + joinTableAlias + " ON ";
+        for(int i=0; i<conditions.length; i++) {
+            String con = conditions[i];
+            q += con;
+            if(i < conditions.length - 1) {
+                q += " AND ";
+            }
+        }
         allQuery.append(q);
-        /*if(innerJoinQuery.length() != 0)
-            innerJoinQuery.append(clauseDivider);
-        String q = "INNER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
-        innerJoinQuery.append(q);*/
+
         return this;
     }
 
@@ -190,11 +195,11 @@ public class SqlBuilder {
      * @param fromAlias - OPTIONAL, alias of a from table
      * @param nestedSql - a nested SQL statement
      * @param joinTableAlias - alias of the joining table
-     * @param condition - the joining condition
+     * @param conditions - the joining conditions, join by AND
      * @return SqlBuilder
      */
-    public SqlBuilder innerJoin(String fromAlias, SqlBuilder nestedSql, String joinTableAlias, String condition) {
-        return innerJoin(fromAlias, "(" + nestedSql.getQuery() + ")", joinTableAlias, condition);
+    public SqlBuilder innerJoin(String fromAlias, SqlBuilder nestedSql, String joinTableAlias, String ... conditions) {
+        return innerJoin(fromAlias, "(" + nestedSql.getQuery() + ")", joinTableAlias, conditions);
     }
 
     /**
@@ -203,18 +208,22 @@ public class SqlBuilder {
      * @param fromAlias - OPTIONAL, alias of a from table
      * @param joinTableName - a nested SQL statement
      * @param joinTableAlias - alias of the joining table
-     * @param condition - the joining condition
+     * @param conditions - the joining condition, join by AND
      * @return SqlBuilder
      *
      */
-    public SqlBuilder leftJoin(String fromAlias, String joinTableName, String joinTableAlias, String condition) {
+    public SqlBuilder leftJoin(String fromAlias, String joinTableName, String joinTableAlias, String ... conditions) {
         allQuery.append(clauseDivider);
-        String q = "LEFT OUTER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
+        String q = "LEFT OUTER JOIN " + joinTableName + " " + joinTableAlias + " ON ";
+        for(int i=0; i<conditions.length; i++) {
+            String con = conditions[i];
+            q += con;
+            if(i < conditions.length - 1) {
+                q += " AND ";
+            }
+        }
         allQuery.append(q);
-        /*if(leftJoinQuery.length() != 0)
-            leftJoinQuery.append(clauseDivider);
-        String q = "LEFT OUTER JOIN " + joinTableName + " " + joinTableAlias + " ON " + condition;
-        leftJoinQuery.append(q);*/
+
         return this;
     }
 
@@ -224,12 +233,12 @@ public class SqlBuilder {
      * @param fromAlias - OPTIONAL, alias of a from table
      * @param nestedSql - a nested SQL statement
      * @param joinTableAlias - alias of the joining table
-     * @param condition - the joining condition
+     * @param conditions - the joining condition, join by AND
      * @return SqlBuilder
      *
      */
-    public SqlBuilder leftJoin(String fromAlias, SqlBuilder nestedSql, String joinTableAlias, String condition) {
-        return leftJoin(fromAlias, "(" + nestedSql.getQuery() + ")", joinTableAlias, condition);
+    public SqlBuilder leftJoin(String fromAlias, SqlBuilder nestedSql, String joinTableAlias, String ... conditions) {
+        return leftJoin(fromAlias, "(" + nestedSql.getQuery() + ")", joinTableAlias, conditions);
     }
 
     /**
@@ -255,10 +264,7 @@ public class SqlBuilder {
         allQuery.append(clauseDivider);
         allQuery.append("ORDER BY ");
         allQuery.append(col + (desc ? " DESC" : ""));
-        /*if(orderQuery.length() == 0) {
-            orderQuery.append("ORDER BY ");
-        }
-        orderQuery.append(col + (desc? " DESC" : ""));*/
+
         return this;
     }
 
@@ -278,10 +284,7 @@ public class SqlBuilder {
     public SqlBuilder addOrderBy(String col, boolean desc) {
         allQuery.append(", ");
         allQuery.append(col + (desc? " DESC" : ""));
-        /*if(orderQuery.length() == 0)
-            return orderBy(col, desc);
-        orderQuery.append(", ");
-        return orderBy(col, desc);*/
+
         return this;
     }
 
@@ -295,10 +298,7 @@ public class SqlBuilder {
     public SqlBuilder groupBy(String col) {
         allQuery.append(clauseDivider);
         allQuery.append("GROUP BY " + col);
-        /*if(groupQuery.length() == 0) {
-            groupQuery.append("GROUP BY ");
-        }
-        groupQuery.append(col);*/
+
         return this;
     }
 
@@ -311,11 +311,7 @@ public class SqlBuilder {
      */
     public SqlBuilder addGroupBy(String col) {
         allQuery.append(", " + col);
-        /*if(groupQuery.length() == 0) {
-            return groupBy(col);
-        }
-        groupQuery.append(", ");*/
-        //return groupBy(col);
+
         return this;
     }
 

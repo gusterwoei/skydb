@@ -76,6 +76,8 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i2) {
+        if(databaseHelper == null)
+            databaseHelper = new DatabaseHelper(db);
         for(int version = 1; version <= i2; version++) {
             onMigrate(db, version, databaseHelper);
         }

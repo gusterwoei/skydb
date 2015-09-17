@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.guster:skydb:1.2.3'
+    compile 'com.guster:skydb:1.3.0'
 }
 ...
 ```
