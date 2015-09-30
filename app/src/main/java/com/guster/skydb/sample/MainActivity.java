@@ -17,6 +17,8 @@ import com.guster.skydb.SkyDatabase;
 import com.guster.skydb.sample.dao.LecturerRepository;
 import com.guster.skydb.sample.domain.Attendance;
 import com.guster.skydb.sample.list.StandardListAdapter;
+import com.guster.sqlbuilder.SqlBuilder;
+
 import java.util.List;
 
 public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {

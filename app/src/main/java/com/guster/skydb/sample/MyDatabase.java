@@ -4,11 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.guster.skydb.SkyDatabase;
-import com.guster.skydb.SqlBuilder;
 import com.guster.skydb.sample.domain.Attendance;
 import com.guster.skydb.sample.domain.Lecturer;
 import com.guster.skydb.sample.domain.Student;
 import com.guster.skydb.sample.domain.Subject;
+import com.guster.sqlbuilder.SqlBuilder;
 
 /**
  * Created by Gusterwoei on 3/17/15.

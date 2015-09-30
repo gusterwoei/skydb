@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.guster.skydb.annotation.Column;
 import com.guster.skydb.annotation.Table;
+import com.guster.sqlbuilder.SqlBuilder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

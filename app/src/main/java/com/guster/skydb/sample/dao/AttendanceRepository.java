@@ -5,11 +5,11 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.guster.skydb.Repository;
-import com.guster.skydb.SqlBuilder;
 import com.guster.skydb.sample.domain.Attendance;
 import com.guster.skydb.sample.domain.Lecturer;
 import com.guster.skydb.sample.domain.Student;
 import com.guster.skydb.sample.domain.Subject;
+import com.guster.sqlbuilder.SqlBuilder;
 
 import java.util.List;
 

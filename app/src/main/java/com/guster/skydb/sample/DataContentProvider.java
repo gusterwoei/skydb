@@ -3,7 +3,6 @@ package com.guster.skydb.sample;
 import android.content.Context;
 import android.util.Log;
 
-import com.guster.skydb.SqlBuilder;
 import com.guster.skydb.sample.dao.AttendanceRepository;
 import com.guster.skydb.sample.dao.LecturerRepository;
 import com.guster.skydb.sample.dao.StudentRepository;

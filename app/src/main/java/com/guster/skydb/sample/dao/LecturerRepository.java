@@ -3,7 +3,6 @@ package com.guster.skydb.sample.dao;
 import android.content.Context;
 
 import com.guster.skydb.Repository;
-import com.guster.skydb.SqlBuilder;
 import com.guster.skydb.sample.domain.Lecturer;
 
 import java.util.List;
