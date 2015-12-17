@@ -22,22 +22,14 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 
 /**
- * Created by kellylu on 3/18/15.
+ * Created by Gusterwoei on 3/18/15.
  */
 public class BaseActivity extends ActionBarActivity {
     private Toolbar toolbar;
-    private StudentRepository studentRepository;
-    private LecturerRepository lecturerRepository;
-    private SubjectRepository subjectRepository;
-    private AttendanceRepository attendanceRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        studentRepository = new StudentRepository(getApplicationContext());
-        lecturerRepository = new LecturerRepository(getApplicationContext());
-        subjectRepository = new SubjectRepository(getApplicationContext());
-        attendanceRepository = new AttendanceRepository(getApplicationContext());
     }
 
     @Override
@@ -51,6 +43,8 @@ public class BaseActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(com.guster.skydb.sample.R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(getResources().getColor(com.guster.skydb.sample.R.color.white));
+
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
     }
 
     @Override
@@ -68,19 +62,19 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     public StudentRepository getStudentRepository() {
-        return studentRepository;
+        return new StudentRepository(getApplicationContext());
     }
 
     public LecturerRepository getLecturerRepository() {
-        return lecturerRepository;
+        return new LecturerRepository(getApplicationContext());
     }
 
     public SubjectRepository getSubjectRepository() {
-        return subjectRepository;
+        return new SubjectRepository(getApplicationContext());
     }
 
     public AttendanceRepository getAttendanceRepository() {
-        return attendanceRepository;
+        return new AttendanceRepository(getApplicationContext());
     }
 
     public void saveDbToSdCard(String dbName) {

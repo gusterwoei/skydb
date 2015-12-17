@@ -2,6 +2,7 @@ package com.guster.skydb.sample;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.guster.skydb.SkyDatabase;
 import com.guster.skydb.sample.domain.Attendance;
@@ -30,17 +31,25 @@ public class MyDatabase extends SkyDatabase {
 
     @Override
     public void onMigrate(SQLiteDatabase db, int version, DatabaseHelper helper) {
-        switch(version) {
-            case 1:
-                break;
-            case 2:
-                SqlBuilder query = SqlBuilder.newInstance()
-                        .alterTable(Student.TABLE_NAME)
-                        .addColumn("status", "integer")
-                        .build();
-                db.execSQL(query.getQuery());
-                break;
-            // and so on...
+        Log.d("SKYDB", "ON MIGRATE -> " + version);
+
+        try {
+            switch (version) {
+                case 1:
+                    break;
+                case 2:
+                    helper.addAllColumns(Student.class);
+                    /*SqlBuilder query = SqlBuilder.newInstance()
+                            .alterTable(Student.TABLE_NAME)
+                            .addColumn("status", "integer")
+                            .build();
+                    db.execSQL(query.getQuery());*/
+                    break;
+                // and so on...
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            Log.e("SKYDB", "Alter table exception: " + e.getMessage());
         }
     }
 }

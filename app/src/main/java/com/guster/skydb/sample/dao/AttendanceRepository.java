@@ -25,17 +25,19 @@ public class AttendanceRepository extends Repository<Attendance> {
 
     @Override
     public List<Attendance> findAll() {
-        SqlBuilder query = SqlBuilder.newInstance()
-                .select("a._id", "sub.subjectId", "sub.title", "l.lecturerId", "l.fname", "l.lname", "stu.studentId", "stu.fname", "stu.lname")
+        SqlBuilder builder = SqlBuilder.newInstance()
+                .select("a._id", "sub.subjectId", "sub.title", "l.lecturerId", "l.fname", "l.lname",
+                        "stu.studentId", "stu.fname", "stu."+Student.COL_LAST_NAME)
                 .addSelect("a.createdDate", "a.modifiedDate")
                 .from(Attendance.TABLE_NAME, "a")
                 .innerJoin("a", Lecturer.TABLE_NAME, "l", "a.lecturerId = l.lecturerId")
                 .innerJoin("a", Student.TABLE_NAME, "stu", "a.studentId = stu.studentId")
                 .innerJoin("a", Subject.TABLE_NAME, "sub", "a." + Attendance.COL_SUBJECT_ID + " = sub.subjectId")
-                .where("sub.title LIKE :subjectTitle")
-                .bindValue("subjectTitle", "artificial intelligence")
+                .where("stu.status = :status")
+                .bindValue("status", 0)
                 .build();
-        return cursorToList(query.getQuery(), new CursorToInstanceListener<Attendance>() {
+        String query = builder.getQuery();
+        return cursorToList(query, new CursorToInstanceListener<Attendance>() {
             @Override
             public Attendance onEachCursor(Cursor cursor) {
                 Attendance attendance = new Attendance();

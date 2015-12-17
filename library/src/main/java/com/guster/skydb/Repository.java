@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.guster.skydb.annotation.Column;
@@ -38,11 +39,11 @@ import java.util.List;
  */
 
 public abstract class Repository<T> {
-    protected Context context;
-    protected static SQLiteDatabase db;
-    private Class<T> classType;
-
+    private static SQLiteDatabase db;
     protected static boolean isTransactionBegun = false;
+
+    private Context context;
+    private Class<T> classType;
 
     // internal statistic data
     private String TABLE_NAME;
@@ -65,6 +66,10 @@ public abstract class Repository<T> {
 
     protected void setContext(Context context) {
         this.context = context;
+    }
+
+    protected SQLiteDatabase getSQLDatabase() {
+        return db;
     }
 
     public synchronized static void beginTransaction() {
@@ -141,7 +146,7 @@ public abstract class Repository<T> {
                 listener.onEachField(column.name(), field.get(item), field, column, i);
                 i++;
             } catch (IllegalAccessException e) {
-                Log.e("ABC", "for each field exception: " + e.getMessage());
+                Util.loge("for each field exception: " + e.getMessage());
             }
         }
     }
@@ -160,74 +165,59 @@ public abstract class Repository<T> {
             obj = classType.getConstructor().newInstance();
 
             // assign data to each field by column's name
-            int colIndex = 0;
+            //int colIndex = 0;
             for(Field field : allDbFields) {
                 try {
                     // determine the data type of a column
-                    int type = cursor.getType(colIndex);
+                    Column col = field.getAnnotation(Column.class);
+                    int columnIndex = cursor.getColumnIndex(col.name());
+                    int type = cursor.getType(columnIndex);
+                    //int type = cursor.getType(colIndex);
+
                     Object val = null;
+
                     switch (type) {
                         case Cursor.FIELD_TYPE_INTEGER:
-                            val = cursor.getInt(colIndex);
+                            //val = cursor.getInt(colIndex);
+                            val = cursor.getInt(columnIndex);
                             if(field.getType().equals(Long.class) || field.getType().equals(Long.TYPE)) {
                                 val = Long.parseLong(val+"");
                             }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:
-                            val = cursor.getFloat(colIndex);
+                            //val = cursor.getFloat(colIndex);
+                            val = cursor.getFloat(columnIndex);
                             if(field.getType().equals(Double.class) || field.getType().equals(Double.TYPE)) {
                                 val = Double.parseDouble(val+"");
                             }
                             break;
                         case Cursor.FIELD_TYPE_STRING:
-                            val = cursor.getString(colIndex);
+                            //val = cursor.getString(colIndex);
+                            val = cursor.getString(columnIndex);
                             break;
                     }
+
                     field.set(obj, val);
+                
                 } catch (IllegalAccessException e) {
-                    Log.e("SQLCREATOR", "getInstance each field exception: " + e.getMessage());
+                    Util.loge("getInstance each field exception: " + e.getMessage());
                     e.printStackTrace();
                 }
-                colIndex++;
+                //colIndex++;
             }
-            /*forEachDbField(obj, new OnEachFieldListener() {
-                @Override
-                public void onEachField(String column, Object value, Field field, Column dbField, int colIndex) {
-                    try {
-                        // determine the data type of a column
-                        //int colIndex = cursor.getColumnIndex(column);
-                        int type = cursor.getType(colIndex);
-                        Object val = null;
-                        switch (type) {
-                            case Cursor.FIELD_TYPE_INTEGER:
-                                val = cursor.getInt(colIndex);
-                                break;
-                            case Cursor.FIELD_TYPE_FLOAT:
-                                val = cursor.getFloat(colIndex);
-                                break;
-                            case Cursor.FIELD_TYPE_STRING:
-                                val = cursor.getString(colIndex);
-                                break;
-                        }
-                        field.set(obj, val);
-                    } catch (IllegalAccessException e) {
-                        Log.e("SQLCREATOR", "getInstance each field exception: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            });*/
+
             return obj;
         } catch (NoSuchMethodException e) {
-            Log.e("SQLCREATOR", "getInstance NoSuchMethodException: " + e.getMessage());
+            Util.loge("getInstance NoSuchMethodException: " + e.getMessage());
             e.printStackTrace();
         } catch (InstantiationException e) {
-            Log.e("SQLCREATOR", "getInstance InstantiationException: " + e.getMessage());
+            Util.loge("getInstance InstantiationException: " + e.getMessage());
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            Log.e("SQLCREATOR", "getInstance IllegalAccessException: " + e.getMessage());
+            Util.loge("getInstance IllegalAccessException: " + e.getMessage());
             e.printStackTrace();
         } catch (InvocationTargetException e) {
-            Log.e("SQLCREATOR", "getInstance InvocationTargetException: " + e.getMessage());
+            Util.loge("getInstance InvocationTargetException: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -283,7 +273,7 @@ public abstract class Repository<T> {
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
-                    Log.e("SQLCREATOR", getClass().getSimpleName() + ": Save Exception - " + e.getMessage());
+                    Util.loge(getClass().getSimpleName() + ": Save Exception - " + e.getMessage());
                 }
             }
         }
@@ -508,7 +498,7 @@ public abstract class Repository<T> {
                 + strCris;
         if(orderColName != null && !orderColName.equals(""))
             query += " ORDER BY " + orderColName;
-        //Log.d("ABC", criteria.getClass().getName() + " query: " + query);
+        //Util.logd(criteria.getClass().getName() + " query: " + query);
         return cursorToList(query);
     }
 
@@ -536,7 +526,6 @@ public abstract class Repository<T> {
                         if (sb.length() > 0)
                             sb.append(" AND ");
                         if(f.getType().equals(Boolean.class)) {
-                            //Log.d("ABC", "FIELD BOOLEAN - " + f.getName());
                             value = Boolean.parseBoolean(value+"")? 1 : 0;
                         }
                         sb.append( ((alias != null)? alias+"." : "") + df.name() + " = " + DatabaseUtils.sqlEscapeString(value + "") );
@@ -545,7 +534,7 @@ public abstract class Repository<T> {
             }
             return sb.toString();
         } catch(Exception e) {
-            Log.e("ABC", "Repository GetWhereStatement Exception: " + e.getMessage());
+            Util.loge("Repository GetWhereStatement Exception: " + e.getMessage());
             e.printStackTrace();
         }
         return "";
@@ -671,13 +660,11 @@ public abstract class Repository<T> {
             int rows = db.delete(TABLE_NAME, where, null);
             return (rows > 0);
         } catch (IllegalAccessException e) {
-            Log.e("SQLCREATOR", "sqlite delete exception: " + e.getMessage());
+            Util.loge("sqlite delete exception: " + e.getMessage());
             e.printStackTrace();
         }
 
         return false;
-        //int rows = db.delete(TABLE_NAME, COL_ID + " = " + car.get_id(), null);
-        //return (rows > 0);
     }
 
     public boolean deleteBy(String col, Object val) {

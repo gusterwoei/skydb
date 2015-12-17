@@ -22,13 +22,15 @@ public class Student {
     public static final String COL_STATUS = "status";
     public static final String COL_CREATED_DATE = "createdDate";
     public static final String COL_MODIFIED_DATE = "modifiedDate";
+    public static final String COL_CONTACT = "contact";
+    public static final String COL_NRIC = "nric";
 
     private long _id;
     @Column(name = COL_STUDENT_ID, primaryKey = true, notNull = true)
     private String studentId;
     @Column(name = COL_FIRST_NAME, notNull = true)
     private String firstName;
-    @Column(name = COL_LAST_NAME, notNull = true)
+    @Column(name = COL_LAST_NAME, notNull = false)
     private String lastName;
     @Column(name = COL_GENDER, notNull = true)
     private String gender;
@@ -42,8 +44,12 @@ public class Student {
     private long createdDate;
     @Column(name = COL_MODIFIED_DATE, notNull = true)
     private long modifiedDate;
-    /*@Column(name = COL_STATUS)
-    private int status;*/
+    @Column(name = COL_STATUS)
+    private int status;
+    @Column(name = COL_CONTACT, defaultValue = "no contact")
+    private String contact;
+    @Column(name = COL_NRIC)
+    private Long nric;
 
     public Student() {}
 
