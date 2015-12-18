@@ -9,7 +9,6 @@ import com.guster.skydb.sample.domain.Attendance;
 import com.guster.skydb.sample.domain.Lecturer;
 import com.guster.skydb.sample.domain.Student;
 import com.guster.skydb.sample.domain.Subject;
-import com.guster.sqlbuilder.SqlBuilder;
 
 /**
  * Created by Gusterwoei on 3/17/15.

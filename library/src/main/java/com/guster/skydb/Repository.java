@@ -21,9 +21,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
 import com.guster.skydb.annotation.Column;
 import com.guster.skydb.annotation.Table;
 import com.guster.sqlbuilder.SqlBuilder;
