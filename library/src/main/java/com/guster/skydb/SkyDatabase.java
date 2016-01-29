@@ -143,42 +143,6 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
 
                         String str = constructColumnStmnt(fieldType, col, uniqueColumns);
 
-                        /*
-                        String str = col.name() + " "; // get column name
-
-                        // get column type
-                        if(fieldType.equals(String.class)) {
-                            str += "TEXT ";
-                        } else if(fieldType.equals(Integer.TYPE) || fieldType.equals(Integer.class)) {
-                            str += "INTEGER ";
-                        } else if(fieldType.equals(Long.TYPE)  || fieldType.equals(Long.class)) {
-                            str += "INTEGER ";
-                        } else if(fieldType.equals(Double.TYPE)  || fieldType.equals(Double.class)) {
-                            str += "NUMERIC ";
-                        } else if(fieldType.equals(Float.TYPE)  || fieldType.equals(Float.class)) {
-                            str += "NUMERIC ";
-                        } else if(fieldType.equals(Boolean.TYPE)  || fieldType.equals(Boolean.class)) {
-                            str += "INTEGER ";
-                        } else {
-                            str += "TEXT ";
-                        }
-
-                        // primary key?
-                        if(col.primaryKey())
-                            str += "PRIMARY KEY ";
-
-                        // auto increment?
-                        if(col.autoIncrement())
-                            str += "AUTOINCREMENT ";
-
-                        // not null?
-                        if(col.notNull())
-                            str += "NOT NULL ";
-
-                        // unique column
-                        if(col.unique())
-                            uniqueColumns.add(col.name());*/
-
                         if(count < allFields.size() - 1) {
                             str += ", ";
                         }
@@ -253,9 +217,11 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
         } else if(fieldType.equals(Long.TYPE)  || fieldType.equals(Long.class)) {
             str += "INTEGER ";
         } else if(fieldType.equals(Double.TYPE)  || fieldType.equals(Double.class)) {
-            str += "NUMERIC ";
+            str += "REAL ";
+            //str += "NUMERIC ";
         } else if(fieldType.equals(Float.TYPE)  || fieldType.equals(Float.class)) {
-            str += "NUMERIC ";
+            str += "REAL ";
+            //str += "NUMERIC ";
         } else if(fieldType.equals(Boolean.TYPE)  || fieldType.equals(Boolean.class)) {
             str += "INTEGER ";
         } else {
