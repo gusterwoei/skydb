@@ -286,7 +286,7 @@ public abstract class Repository<T> {
         int count = 0;
 
         // threshold inserts
-        beginTransaction();
+        //beginTransaction();
         for(int k=0; k<numOfInserts; k++) {
             // one insert statement
             StringBuilder sb = new StringBuilder();
@@ -319,7 +319,7 @@ public abstract class Repository<T> {
             String sql = "INSERT OR REPLACE INTO " + TABLE_NAME + " VALUES " + sb.toString();
             runQuery(sql);
         }
-        endTransaction();
+        //endTransaction();
     }
 
     private void addInsertValues(T item, StringBuilder sb) {
