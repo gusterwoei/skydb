@@ -103,7 +103,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         int id = item.getItemId();
 
         if(id == com.guster.skydb.sample.R.id.action_debug) {
-            saveDbToSdCard("sqliteCreator.db");
+            saveDbToSdCard(getString(R.string.db_name));
         }
         else if(id == com.guster.skydb.sample.R.id.action_add) {
             startActivityForResult(new Intent(this, NewAttendanceActivity.class), 99);

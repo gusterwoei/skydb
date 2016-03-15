@@ -16,8 +16,8 @@ public class MyApplication extends Application {
         super.onCreate();
 
         // create db
-        MyDatabase myDatabase = new MyDatabase(this, "sqliteCreator.db", Integer.parseInt(getString(R.string.db_version)));
-        //myDatabase.createDatabase();
+        MyDatabase myDatabase = new MyDatabase(this, getString(R.string.db_name), Integer.parseInt(getString(R.string.db_version)));
+        myDatabase.createDatabase();
 
         // load dummy data
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);

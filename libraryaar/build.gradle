@@ -1,2 +1,2 @@
 configurations.create("default")
-artifacts.add("default", file('library-release.aar'))
+artifacts.add("default", file('library-debug.aar'))

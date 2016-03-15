@@ -24,6 +24,7 @@ public class Student {
     public static final String COL_MODIFIED_DATE = "modifiedDate";
     public static final String COL_CONTACT = "contact";
     public static final String COL_NRIC = "nric";
+    private static final String COL_IS_ACTIVE = "isActive";
 
     private long _id;
     @Column(name = COL_STUDENT_ID, primaryKey = true, notNull = true)
@@ -50,6 +51,8 @@ public class Student {
     private String contact;
     @Column(name = COL_NRIC)
     private Long nric;
+    @Column(name = COL_IS_ACTIVE)
+    private Boolean isActive;
 
     public Student() {}
 
@@ -131,5 +134,13 @@ public class Student {
 
     public void setModifiedDate(long modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 }

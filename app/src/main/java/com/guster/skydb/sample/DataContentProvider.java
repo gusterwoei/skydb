@@ -50,6 +50,7 @@ public class DataContentProvider {
             student.setGpa(2.01 + 0.1);
             student.setCreatedDate(time);
             student.setModifiedDate(time);
+            student.setIsActive(i % 2 == 0);
             studentRepository.save(student);
         }
 

@@ -169,27 +169,26 @@ public abstract class Repository<T> {
                     Column col = field.getAnnotation(Column.class);
                     int columnIndex = cursor.getColumnIndex(col.name());
                     int type = cursor.getType(columnIndex);
-                    //int type = cursor.getType(colIndex);
 
                     Object val = null;
 
                     switch (type) {
                         case Cursor.FIELD_TYPE_INTEGER:
-                            //val = cursor.getInt(colIndex);
                             val = cursor.getInt(columnIndex);
                             if(field.getType().equals(Long.class) || field.getType().equals(Long.TYPE)) {
                                 val = Long.parseLong(val+"");
+
+                            } else if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
+                                val = Boolean.parseBoolean(val+"");
                             }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:
-                            //val = cursor.getFloat(colIndex);
                             val = cursor.getFloat(columnIndex);
                             if(field.getType().equals(Double.class) || field.getType().equals(Double.TYPE)) {
                                 val = Double.parseDouble(val+"");
                             }
                             break;
                         case Cursor.FIELD_TYPE_STRING:
-                            //val = cursor.getString(colIndex);
                             val = cursor.getString(columnIndex);
                             break;
                     }
@@ -227,7 +226,10 @@ public abstract class Repository<T> {
             @Override
             public void onEachField(String column, Object value, Field field, Column dbField, int index) {
                 if(!dbField.autoIncrement() && value != null) {
-                    values.put(column, value + "");
+                    if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE))
+                        values.put(column, Boolean.valueOf(value + ""));
+                    else
+                        values.put(column, value + "");
                 }
             }
         });
