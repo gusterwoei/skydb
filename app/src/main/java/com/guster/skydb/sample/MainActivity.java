@@ -10,10 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.guster.skydb.sample.domain.Attendance;
+import com.guster.skydb.sample.domain.Student;
 import com.guster.skydb.sample.list.StandardListAdapter;
 import com.guster.sqlbuilder.SqlBuilder;
 
