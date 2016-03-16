@@ -179,7 +179,7 @@ public abstract class Repository<T> {
                                 val = Long.parseLong(val+"");
 
                             } else if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
-                                val = Boolean.parseBoolean(val+"");
+                                val = (val == 1);
                             }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:

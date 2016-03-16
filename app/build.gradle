@@ -24,6 +24,7 @@ dependencies {
 
     compile 'com.android.support:support-v4:21.0.0'
     compile 'com.android.support:appcompat-v7:21.0.3'
+    //compile 'com.guster:skydb:2.0.3'
     compile project(':libraryaar')
     //compile project(':library')
 }
