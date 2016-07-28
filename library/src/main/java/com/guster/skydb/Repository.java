@@ -335,7 +335,7 @@ public abstract class Repository<T> {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        sb.append(SqlBuilder.getInsertStmnt(dbValues));
+        sb.append(SqlBuilder.arrayToCommaSeparatedString(dbValues));
     }
 
     public T findOne(Object id) {
@@ -375,7 +375,7 @@ public abstract class Repository<T> {
                 .from(TABLE_NAME, "t")
                 .where(col + " = :a1")
                 .bindValue("a1", val)
-                .build().getQuery();
+                .getQuery();
 
         return cursorToList(query);
     }
@@ -404,7 +404,7 @@ public abstract class Repository<T> {
             }
         }
 
-        String query = builder.build().getQuery();
+        String query = builder.getQuery();
 
         return cursorToList(query);
     }
@@ -415,7 +415,7 @@ public abstract class Repository<T> {
                 .from(TABLE_NAME, "t")
                 .where(col + " = :a1")
                 .groupBy(groupByCol)
-                .bindValue("a1", val).build().getQuery();
+                .bindValue("a1", val).getQuery();
 
         return cursorToList(query);
     }
@@ -426,7 +426,7 @@ public abstract class Repository<T> {
                 .from(TABLE_NAME, "t")
                 .where(col + " = :a1")
                 .orderBy(orderByCol, desc)
-                .bindValue("a1", val).build().getQuery();
+                .bindValue("a1", val).getQuery();
 
         return cursorToList(query);
     }
@@ -438,7 +438,7 @@ public abstract class Repository<T> {
                 .where(col + " = :a1")
                 .groupBy(groupByCol)
                 .orderBy(orderByCol, desc)
-                .bindValue("a1", val).build().getQuery();
+                .bindValue("a1", val).getQuery();
 
         return cursorToList(query);
     }
@@ -446,7 +446,7 @@ public abstract class Repository<T> {
     public List<T> findAll() {
         String query = SqlBuilder.newInstance()
                 .select("*")
-                .from(TABLE_NAME, "t").build().getQuery();
+                .from(TABLE_NAME, "t").getQuery();
 
         return cursorToList(query);
     }
@@ -456,7 +456,7 @@ public abstract class Repository<T> {
                 .select("*")
                 .from(TABLE_NAME, "t")
                 .groupBy(col)
-                .build().getQuery();
+                .getQuery();
 
         return cursorToList(query);
     }
@@ -466,7 +466,7 @@ public abstract class Repository<T> {
                 .select("*")
                 .from(TABLE_NAME, "t")
                 .orderBy(col, desc)
-                .build().getQuery();
+                .getQuery();
 
         return cursorToList(query);
     }
@@ -477,7 +477,7 @@ public abstract class Repository<T> {
                 .from(TABLE_NAME, "t")
                 .groupBy(groupByCol)
                 .orderBy(orderByCol, desc)
-                .build().getQuery();
+                .getQuery();
 
         return cursorToList(query);
     }
@@ -549,7 +549,7 @@ public abstract class Repository<T> {
                     .select("*")
                     .from(TABLE_NAME, "t")
                     .where(where)
-                    .build().getQuery();
+                    .getQuery();
             return findByQuery(query);
 
         }
