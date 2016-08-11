@@ -17,7 +17,6 @@
 package com.guster.skydb;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,20 +28,30 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Gusterwoei on 1/15/14.
  */
 
-public abstract class Repository<T> {
-    private static SQLiteDatabase db;
-    protected static boolean isTransactionBegun = false;
+public class Repository<T> {
 
-    private Context context;
-    private Class<T> classType;
+    private interface OnEachFieldListener {
+        void onEachField(String column, Object value, Field field, Column dbField, int colIndex);
+    }
+    
+    public interface CursorToInstanceListener<T> {
+        T onEachCursor(Cursor cursor);
+    }
+    
+    protected static boolean isTransactionBegun = false;
+    private static Map<String, Repository<?>> repositories = new HashMap<>();
 
     // internal statistic data
+    private static SQLiteDatabase db;
+    private Class<T> classType;
     private String TABLE_NAME;
     private List<String> primaryKeys;
     private List<Field> primaryKeyFields;
@@ -50,19 +59,11 @@ public abstract class Repository<T> {
     private List<Column> allDbFieldAnnotations;
     private int numberOfColumns;
 
-    public Repository(Context context, Class<T> type) {
-        this.context = context;
+
+    public Repository(Class<T> type) {
         db = SkyDatabase.getInstance().createDatabase();
         this.classType = type;
         init(classType);
-    }
-
-    protected Context getContext() {
-        return context;
-    }
-
-    protected void setContext(Context context) {
-        this.context = context;
     }
 
     protected SQLiteDatabase getSQLDatabase() {
@@ -84,6 +85,25 @@ public abstract class Repository<T> {
         }
     }
 
+    private static void setIsTransactionBegun(boolean b) {
+        isTransactionBegun = b;
+    }
+
+    /**
+     * Return a singleton Repository that represents an Entity of class {@code cls}
+     *
+     * @param cls   Entity class
+     * @param <T>   Entity class type
+     * @return      Repository of a given class type
+     */
+    public static <T> Repository<T> create(Class<T> cls) {
+        if(!repositories.containsKey(cls.getName())) {
+            repositories.put(cls.getName(), new Repository<>(cls));
+        }
+
+        return (Repository<T>) repositories.get(cls.getName());
+    }
+
     private void init(Class<?> cls) {
         // if tableName is null, loop through T's constructors and get it
         if(TABLE_NAME == null) {
@@ -92,15 +112,6 @@ public abstract class Repository<T> {
                 // get table name
                 TABLE_NAME = table.name();
             }
-            /*Constructor[] constructors = cls.getDeclaredConstructors();
-            for(Constructor cont : constructors) {
-                Table table = (Table) cont.getAnnotation(Table.class);
-                if(table != null) {
-                    // get table name
-                    TABLE_NAME =  table.name();
-                    break;
-                }
-            }*/
         }
 
         // initialize all columns and its fields
@@ -136,23 +147,54 @@ public abstract class Repository<T> {
 
     private void forEachDbField(T item, OnEachFieldListener listener) {
         int i = 0;
-        //List<Field> fields = getInheritedFields(classType);
         for(Field field : allDbFields) {
             try {
                 Column column = allDbFieldAnnotations.get(i);
                 listener.onEachField(column.name(), field.get(item), field, column, i);
                 i++;
             } catch (IllegalAccessException e) {
-                Util.loge("for each field exception: " + e.getMessage());
+                Util.loge("for each field exception: ", e);
+                raise(e);
             }
         }
     }
-    private interface OnEachFieldListener {
-        void onEachField(String column, Object value, Field field, Column dbField, int colIndex);
+    
+    private void raise(Throwable e) {
+        throw new SkyDbException(e);
     }
 
-    private static void setIsTransactionBegun(boolean b) {
-        isTransactionBegun = b;
+    private List<Field> getInheritedFields(Class<?> type) {
+        List<Field> fields = new ArrayList<Field>();
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        return fields;
+    }
+
+    private String getUniqueWheres(T item) {
+        final List<String> wheres = new ArrayList<>();
+        forEachDbField(item, new OnEachFieldListener() {
+            @Override
+            public void onEachField(String column, Object value, Field field, Column dbField, int index) {
+                if(dbField.unique()) {
+                    wheres.add(column + " = " + (value != null? DatabaseUtils.sqlEscapeString((String) value) : "null") );
+                }
+            }
+        });
+
+        // construct where query part
+        String query = null;
+        if(!wheres.isEmpty()) {
+            query = "";
+            for (int i = 0; i < wheres.size(); i++) {
+                String where = wheres.get(i);
+                query += where;
+                if (i < wheres.size() - 1) {
+                    query += " AND ";
+                }
+            }
+        }
+        return query;
     }
 
     protected T getInstance(final Cursor cursor) {
@@ -162,7 +204,6 @@ public abstract class Repository<T> {
             obj = classType.getConstructor().newInstance();
 
             // assign data to each field by column's name
-            //int colIndex = 0;
             for(Field field : allDbFields) {
                 try {
                     // determine the data type of a column
@@ -196,25 +237,25 @@ public abstract class Repository<T> {
                     field.set(obj, val);
                 
                 } catch (IllegalAccessException e) {
-                    Util.loge("getInstance each field exception: " + e.getMessage());
-                    e.printStackTrace();
+                    Util.loge("getInstance each field exception: ", e);
+                    raise(e);
                 }
                 //colIndex++;
             }
 
             return obj;
         } catch (NoSuchMethodException e) {
-            Util.loge("getInstance NoSuchMethodException: " + e.getMessage());
-            e.printStackTrace();
+            Util.loge("getInstance NoSuchMethodException: ", e);
+            raise(e);
         } catch (InstantiationException e) {
-            Util.loge("getInstance InstantiationException: " + e.getMessage());
-            e.printStackTrace();
+            Util.loge("getInstance InstantiationException: ", e);
+            raise(e);
         } catch (IllegalAccessException e) {
-            Util.loge("getInstance IllegalAccessException: " + e.getMessage());
-            e.printStackTrace();
+            Util.loge("getInstance IllegalAccessException: ", e);
+            raise(e);
         } catch (InvocationTargetException e) {
-            Util.loge("getInstance InvocationTargetException: " + e.getMessage());
-            e.printStackTrace();
+            Util.loge("getInstance InvocationTargetException: ", e);
+            raise(e);
         }
 
         return null;
@@ -236,50 +277,78 @@ public abstract class Repository<T> {
         return values;
     }
 
-    //protected abstract T save(T obj);
+    private List<T> cursorToList(String query) {
+        init(classType);
+        return cursorToList(query, new CursorToInstanceListener<T>() {
+            @Override
+            public T onEachCursor(Cursor cursor) {
+                return getInstance(cursor);
+            }
+        });
+    }
+
+    private List<T> cursorToList(String query, CursorToInstanceListener<T> listener) {
+        List<T> items = new ArrayList<T>();
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, null);
+            if(cursor.getCount() <= 0) return items;
+
+            cursor.moveToFirst();
+            do {
+                if(listener != null) {
+                    items.add(listener.onEachCursor(cursor));
+                } else {
+                    items.add(getInstance(cursor));
+                }
+            } while(cursor.moveToNext());
+
+        } finally {
+            if(cursor != null)
+                cursor.close();
+        }
+
+        return items;
+    }
 
     /**
+     * Persist or update an SkyDb-annotated item into database depending on the existence of item
+     * in the database. The existence check is based on the entity's Primary Key and Unique fields.
      *
-     * @param newItem - New domain item to be saved
-     * @return T
-     *
+     * @param item  New item to be saved
+     * @return      T
+     * @throws      SkyDbException
      */
-    public T save(T newItem) {
-        init(newItem.getClass());
+    public T save(T item) {
+        init(item.getClass());
 
-        Long id = null;
-        /*String where = getUniqueWheres(newItem);
-        if(where == null) {
-            // save / update existing record
-            id = db.insertWithOnConflict(TABLE_NAME, null, getFields(newItem), SQLiteDatabase.CONFLICT_REPLACE);
-        } else {
-            // save new record based on the save criteria(s)
-            List<T> existingList = findByQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + where);
-            if(existingList.isEmpty())
-                id = db.insert(TABLE_NAME, null, getFields(newItem));
-            else
-                db.update(TABLE_NAME, getFields(newItem), where, null);
-        }*/
-        id = db.insertWithOnConflict(TABLE_NAME, null, getFields(newItem), SQLiteDatabase.CONFLICT_REPLACE);
+        Long id;
+        id = db.insertWithOnConflict(TABLE_NAME, null, getFields(item), SQLiteDatabase.CONFLICT_REPLACE);
 
         if(id != null) {
             for(Field f : primaryKeyFields) {
                 try {
                     Column column = f.getAnnotation(Column.class);
                     if(column.autoIncrement()) {
-                        f.set(newItem, id);
+                        f.set(item, id);
                         break;
                     }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    Util.loge(getClass().getSimpleName() + ": Save Exception - " + e.getMessage());
+                    Util.loge("save()", e);
+                    raise(e);
                 }
             }
         }
 
-        return newItem;
+        return item;
     }
 
+    /**
+     * Persist or update a list of entity objects into database depending on the existence of item
+     * in the database. The existence check is based on the entity's Primary Key and Unique fields.
+     *
+     * @param items  List of saving items
+     */
     public void saveAll(List<T> items) {
         int maxRowsPerInsert = 25;
         int size = items.size();
@@ -338,17 +407,29 @@ public abstract class Repository<T> {
         sb.append(SqlBuilder.arrayToCommaSeparatedString(dbValues));
     }
 
-    public T findOne(Object id) {
+    /**
+     * Find an entity object based on its primary key value. If an entity does not contain
+     * a primary key, null will be returned.
+     *
+     * @param id    primary key id
+     * @return      entity object with primary key value = id, or null if not found
+     */
+    public T find(final Object id) {
         final List<String> wheres = new ArrayList<>();
         forEachDbField(null, new OnEachFieldListener() {
             @Override
             public void onEachField(String column, Object value, Field field, Column dbField, int index) {
                 // find by primary key(s)
                 if(dbField.primaryKey()) {
-                    wheres.add(column + " = " + DatabaseUtils.sqlEscapeString((String) value));
+                    //wheres.add(column + " = " + DatabaseUtils.sqlEscapeString((String) value));
+                    wheres.add(column + " = " + DatabaseUtils.sqlEscapeString((String) id));
                 }
             }
         });
+
+        if(wheres.isEmpty()) {
+            return null;
+        }
 
         String query = "" +
                 "SELECT * " +
@@ -365,22 +446,57 @@ public abstract class Repository<T> {
         return result.isEmpty()? null : result.get(0);
     }
 
+    /**
+     * Find a list of entity objects based on a given query string.
+     *
+     * @param query     Sql query
+     * @return          List of entity objects
+     */
     public List<T> findByQuery(String query) {
         return cursorToList(query);
     }
 
-    public List<T> findBy(String col, Object val) {
+    /**
+     * Find a List of entity object based on a given query string with an intermediate callback
+     * for each row returned. CursorToInstanceListener will return a cursor for each row,
+     * you can use this for customization.
+     *
+     * @param query     Sql query
+     * @param listener  A callback for each row returned
+     * @return          List of found entities
+     */
+    public List<T> findByQuery(String query, CursorToInstanceListener<T> listener) {
+        return cursorToList(query, listener);
+    }
+
+    /**
+     * Find a List of entity object based on a column.
+     *
+     * @param column    table column
+     * @param value     table value
+     * @return          List of found entities
+     */
+    public List<T> findBy(String column, Object value) {
         String query = SqlBuilder.newInstance()
                 .select("*")
                 .from(TABLE_NAME, "t")
-                .where(col + " = :a1")
-                .bindValue("a1", val)
+                .where(column + " = :a1")
+                .bindValue("a1", value)
                 .getQuery();
 
         return cursorToList(query);
     }
 
-    public List<T> findBy(String[] columns, Object[] values, String orderColumn) {
+    /**
+     * Find a List of entity object based on a given list of columns and values.
+     * The number of columns and the number of values must be the same.
+     *
+     * @param columns   table columns to query with
+     * @param values    columns' values
+     * @param order     order criteria (eg. name, title DESC)
+     * @return          List of found entities
+     */
+    public List<T> findBy(String[] columns, Object[] values, String order) {
         if(columns == null || values == null) {
             throw new IllegalArgumentException("columns and values arguments cannot be null");
         } else if(columns.length != values.length) {
@@ -399,8 +515,8 @@ public abstract class Repository<T> {
             else
                 builder.andWhere(where);
 
-            if(orderColumn != null && !orderColumn.isEmpty()) {
-                builder.orderBy(orderColumn);
+            if(order != null && !order.isEmpty()) {
+                builder.orderBy(order);
             }
         }
 
@@ -409,40 +525,75 @@ public abstract class Repository<T> {
         return cursorToList(query);
     }
 
-    public List<T> findByGroupBy(String col, Object val, String groupByCol) {
+    /**
+     * Find a List of entity object based on a given list of columns and values.
+     * The returned result is group by {@code groupByCol}
+     *
+     * @param column        Table column
+     * @param value         column value
+     * @param groupByCol    column to group
+     * @return              List of entity object
+     */
+    public List<T> findByGroupBy(String column, Object value, String groupByCol) {
         String query = SqlBuilder.newInstance()
                 .select("*")
                 .from(TABLE_NAME, "t")
-                .where(col + " = :a1")
+                .where(column + " = :a1")
                 .groupBy(groupByCol)
-                .bindValue("a1", val).getQuery();
+                .bindValue("a1", value).getQuery();
 
         return cursorToList(query);
     }
 
-    public List<T> findByOrderBy(String col, Object val, String orderByCol, boolean desc) {
+    /**
+     * Find a List of entity object based on a given list of columns and values.
+     * The returned result is sorted by {@code orderByCol} and {@code desc}
+     *
+     * @param column        table column
+     * @param value         column value
+     * @param orderByCol    column to sort by
+     * @param desc          true for descending, false for ascending
+     * @return              List of entity object
+     */
+    public List<T> findByOrderBy(String column, Object value, String orderByCol, boolean desc) {
         String query = SqlBuilder.newInstance()
                 .select("*")
                 .from(TABLE_NAME, "t")
-                .where(col + " = :a1")
+                .where(column + " = :a1")
                 .orderBy(orderByCol, desc)
-                .bindValue("a1", val).getQuery();
+                .bindValue("a1", value).getQuery();
 
         return cursorToList(query);
     }
 
-    public List<T> findByGroupByOrderBy(String col, Object val, String groupByCol, String orderByCol, boolean desc) {
+    /**
+     * Find a List of entity object based on a given list of columns and values.
+     * The returned result is group by {@code groupByCol} and sorted by {@code orderByCol} and {@code desc}
+     *
+     * @param column        Table column
+     * @param value         column value
+     * @param groupByCol    column to group by
+     * @param orderByCol    column to sort by
+     * @param desc          true for descending, false for ascending
+     * @return              List of entity object
+     */
+    public List<T> findByGroupByOrderBy(String column, Object value, String groupByCol, String orderByCol, boolean desc) {
         String query = SqlBuilder.newInstance()
                 .select("*")
                 .from(TABLE_NAME, "t")
-                .where(col + " = :a1")
+                .where(column + " = :a1")
                 .groupBy(groupByCol)
                 .orderBy(orderByCol, desc)
-                .bindValue("a1", val).getQuery();
+                .bindValue("a1", value).getQuery();
 
         return cursorToList(query);
     }
 
+    /**
+     * Find all records of an entity
+     * 
+     * @return      List of entity object
+     */
     public List<T> findAll() {
         String query = SqlBuilder.newInstance()
                 .select("*")
@@ -451,26 +602,47 @@ public abstract class Repository<T> {
         return cursorToList(query);
     }
 
-    public List<T> findAllGroupBy(String col) {
+    /**
+     * Find all records of an entity, group by {@code column}
+     *
+     * @param column    column to group by
+     * @return          List of entity object
+     */
+    public List<T> findAllGroupBy(String column) {
         String query = SqlBuilder.newInstance()
                 .select("*")
                 .from(TABLE_NAME, "t")
-                .groupBy(col)
+                .groupBy(column)
                 .getQuery();
 
         return cursorToList(query);
     }
 
-    public List<T> findAllOrderBy(String col, boolean desc) {
+    /**
+     * Find all records of an entity, order by {@code column}
+     *
+     * @param column    table column
+     * @param desc      true for descending, false for ascending
+     * @return          List of entity object
+     */
+    public List<T> findAllOrderBy(String column, boolean desc) {
         String query = SqlBuilder.newInstance()
                 .select("*")
                 .from(TABLE_NAME, "t")
-                .orderBy(col, desc)
+                .orderBy(column, desc)
                 .getQuery();
 
         return cursorToList(query);
     }
 
+    /**
+     * Find all records of an entity, group by {@code groupByCol} order by {@code orderByCol}
+     *
+     * @param groupByCol    column to group by
+     * @param orderByCol    column to sort by
+     * @param desc          true for descending, false for ascending
+     * @return              List of entity object
+     */
     public List<T> findAllGroupByOrderBy(String groupByCol, String orderByCol, boolean desc) {
         String query = SqlBuilder.newInstance()
                 .select("*")
@@ -482,173 +654,171 @@ public abstract class Repository<T> {
         return cursorToList(query);
     }
 
-    public List<T> findByCriteria(T criteria) {
+//    public List<T> findByCriteria(T criteria) {
+//        return findByCriteria(criteria, null);
+//    }
+//
+//    public List<T> findByCriteria(T criteria, String orderColName) {
+//        // insert WHERE clause
+//        String strCris = getWhereQueryParts(criteria, null);
+//        if (strCris.length() > 0)
+//            strCris = " WHERE " + strCris;
+//        String query = "" +
+//                "SELECT * " +
+//                "FROM " + TABLE_NAME
+//                + strCris;
+//        if(orderColName != null && !orderColName.equals(""))
+//            query += " ORDER BY " + orderColName;
+//        return cursorToList(query);
+//    }
+
+//    public List<T> findUnique(T item) {
+//        // get criteria statement for each field marked with unique = true
+//        String where = getUniqueWheres(item);
+//
+//        // apply where clause to the query
+//        if(where != null) {
+//            String query = SqlBuilder.newInstance()
+//                    .select("*")
+//                    .from(TABLE_NAME, "t")
+//                    .where(where)
+//                    .getQuery();
+//            return findByQuery(query);
+//
+//        }
+//        return new ArrayList<T>();
+//    }
+
+//    protected String getWhereQueryParts(T criteria, String alias) {
+//        StringBuilder sb = new StringBuilder();
+//        List<Field> allFields = getInheritedFields(criteria.getClass());
+//
+//        try {
+//            for(Field f : allFields) {
+//                f.setAccessible(true);
+//                Object value = f.get(criteria);
+//                if(value != null && !value.equals("")) {
+//                    // get field's annotation
+//                    Column df = f.getAnnotation(Column.class);
+//                    if(df != null) {
+//                        if (sb.length() > 0)
+//                            sb.append(" AND ");
+//                        if(f.getType().equals(Boolean.class)) {
+//                            value = Boolean.parseBoolean(value+"")? 1 : 0;
+//                        }
+//                        sb.append( ((alias != null)? alias+"." : "") + df.name() + " = " + DatabaseUtils.sqlEscapeString(value + "") );
+//                    }
+//                }
+//            }
+//            return sb.toString();
+//        } catch(Exception e) {
+//            Util.loge("Repository GetWhereStatement Exception: ", e);
+//            raise(e);
+//        }
+//        return "";
+//    }
+
+    /**
+     * Find a list of entity records based on a Criteria. Each criteria's condition is glued
+     * by an AND.
+     *
+     * Example:
+     *
+     * Criteria criteria = new Criteria()
+     *      .equal("first_name", "Julia")
+     *      .equal("last_name", "Mai")
+     *      .notEqual("status", 0)
+     *      .greaterThan("score", 90)
+     *      .between("height", 160, 170);
+     * List<Person> persons = findByCriteria(criteria);
+     *
+     * @param criteria      Criteria object
+     * @return              List of entity objects
+     */
+    public List<T> findByCriteria(Criteria criteria) {
         return findByCriteria(criteria, null);
     }
 
-    public List<T> findByCriteria(T criteria, String orderColName) {
-        // insert WHERE clause
-        String strCris = getWhereQueryParts(criteria, null);
-        if (strCris.length() > 0)
-            strCris = " WHERE " + strCris;
-        String query = "" +
-                "SELECT * " +
-                "FROM " + TABLE_NAME
-                + strCris;
-        if(orderColName != null && !orderColName.equals(""))
-            query += " ORDER BY " + orderColName;
-        //Util.logd(criteria.getClass().getName() + " query: " + query);
-        return cursorToList(query);
-    }
-
-    private List<Field> getInheritedFields(Class<?> type) {
-        List<Field> fields = new ArrayList<Field>();
-        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+    /**
+     * Find a list of entity records based on a Criteria. Each criteria's condition is glued
+     * by an AND.
+     *
+     * Example:
+     *
+     * Criteria criteria = new Criteria()
+     *      .equal("first_name", "Julia")
+     *      .equal("last_name", "Mai")
+     *      .notEqual("status", 0)
+     *      .greaterThan("score", 90)
+     *      .between("height", 160, 170);
+     * List<Person> persons = findByCriteria(criteria);
+     *
+     * @param criteria      Criteria object
+     * @param order         column to sort
+     * @return              List of entity objects
+     */
+    public List<T> findByCriteria(Criteria criteria, String order) {
+        SqlBuilder builder = SqlBuilder.newInstance()
+                .select("*")
+                .from(TABLE_NAME, "t")
+                .where(criteria.build());
+        if(order != null) {
+            builder.orderBy(order);
         }
-        return fields;
+        String query = builder.getQuery();
+        return findByQuery(query);
     }
 
-    public String getWhereQueryParts(T criteria, String alias) {
-        StringBuilder sb = new StringBuilder();
-        //Field[] allParentFields = criteria.getClass().getDeclaredFields();
-        List<Field> allFields = getInheritedFields(criteria.getClass());
+    /**
+     * Update an entity's columns defined in {@code values} by a given column and its equal value.
+     *
+     * @param column    where column
+     * @param value     where value
+     * @param values    columns to update and the their values
+     * @return          number of updated rows
+     */
+    public int updateBy(String column, Object value, ContentValues values) {
+        String wheres = (column + " = ?");
+        String[] whereArgs = new String[] { (value != null ? DatabaseUtils.sqlEscapeString((String) value) : null) };
 
-        try {
-            for(Field f : allFields) {
-                f.setAccessible(true);
-                Object value = f.get(criteria);
-                if(value != null && !value.equals("")) {
-                    // get field's annotation
-                    Column df = f.getAnnotation(Column.class);
-                    if(df != null) {
-                        if (sb.length() > 0)
-                            sb.append(" AND ");
-                        if(f.getType().equals(Boolean.class)) {
-                            value = Boolean.parseBoolean(value+"")? 1 : 0;
-                        }
-                        sb.append( ((alias != null)? alias+"." : "") + df.name() + " = " + DatabaseUtils.sqlEscapeString(value + "") );
-                    }
-                }
-            }
-            return sb.toString();
-        } catch(Exception e) {
-            Util.loge("Repository GetWhereStatement Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return "";
+        return db.update(TABLE_NAME, values, wheres, whereArgs);
     }
 
-    public List<T> findUnique(T item) {
-        // get criteria statement for each field marked with unique = true
-        String where = getUniqueWheres(item);
-
-        // apply where clause to the query
-        if(where != null) {
-            String query = SqlBuilder.newInstance()
-                    .select("*")
-                    .from(TABLE_NAME, "t")
-                    .where(where)
-                    .getQuery();
-            return findByQuery(query);
-
-        }
-        return new ArrayList<T>();
+    /**
+     * Update an entity's columns defined in {@code values} based on the conditions defined
+     * in {@code criteria}
+     *
+     * @param criteria  a Criteria object that defines a set of conditions
+     * @param values    columns to update and the their values
+     * @return          number of updated rows
+     */
+    public int updateBy(Criteria criteria, ContentValues values) {
+        return db.update(TABLE_NAME, values, criteria.build(), null);
     }
 
-    private String getUniqueWheres(T item) {
-        final List<String> wheres = new ArrayList<>();
-        forEachDbField(item, new OnEachFieldListener() {
-            @Override
-            public void onEachField(String column, Object value, Field field, Column dbField, int index) {
-                if(dbField.unique()) {
-                    wheres.add(column + " = " + (value != null? DatabaseUtils.sqlEscapeString((String) value) : "null") );
-                }
-            }
-        });
-
-        // construct where query part
-        String query = null;
-        if(!wheres.isEmpty()) {
-            query = "";
-            for (int i = 0; i < wheres.size(); i++) {
-                String where = wheres.get(i);
-                query += where;
-                if (i < wheres.size() - 1) {
-                    query += " AND ";
-                }
-            }
-        }
-        return query;
-    }
-
-    protected List<T> cursorToList(String query) {
-        init(classType);
-        return cursorToList(query, new CursorToInstanceListener<T>() {
-            @Override
-            public T onEachCursor(Cursor cursor) {
-                return getInstance(cursor);
-            }
-        });
-        /*List<T> items = new ArrayList<T>();
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery(query, null);
-            if(cursor.getCount() <= 0) return items;
-
-            cursor.moveToFirst();
-            do {
-                T item = getInstance(cursor);
-                items.add(item);
-            } while(cursor.moveToNext());
-        } finally {
-            if(cursor != null)
-                cursor.close();
-        }
-
-        return items;*/
-    }
-
-    public interface CursorToInstanceListener<T> {
-        T onEachCursor(Cursor cursor);
-    }
-
-    public List<T> cursorToList(String query, CursorToInstanceListener<T> listener) {
-        List<T> items = new ArrayList<T>();
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery(query, null);
-            if(cursor.getCount() <= 0) return items;
-
-            cursor.moveToFirst();
-            do {
-                if(listener != null) {
-                    items.add(listener.onEachCursor(cursor));
-                } else {
-                    items.add(getInstance(cursor));
-                }
-            } while(cursor.moveToNext());
-
-        } finally {
-            if(cursor != null)
-                cursor.close();
-        }
-
-        return items;
-    }
-
+    /**
+     * Execute a raw Sql query.
+     *
+     * @param query - Sql query
+     */
     public void runQuery(String query) {
         db.execSQL(query);
     }
 
-    public boolean delete(T car) {
-        init(car.getClass());
+    /**
+     * Delete an entity object based on its primary key value.
+     *
+     * @param object    entity object
+     * @return          true if an object is deleted
+     */
+    public boolean delete(T object) {
+        init(object.getClass());
 
         try {
             String where = "";
             for(int i=0; i<primaryKeyFields.size(); i++) {
                 String column = primaryKeys.get(i);
-                String value = primaryKeyFields.get(i).get(car).toString();
+                String value = primaryKeyFields.get(i).get(object).toString();
                 where += column + " = " + DatabaseUtils.sqlEscapeString(value);
 
                 if(i < primaryKeyFields.size() - 1) {
@@ -656,33 +826,51 @@ public abstract class Repository<T> {
                 }
             }
 
+            // no primary key is defined
+            if(where.isEmpty()) {
+                return false;
+            }
+
             int rows = db.delete(TABLE_NAME, where, null);
             return (rows > 0);
         } catch (IllegalAccessException e) {
-            Util.loge("sqlite delete exception: " + e.getMessage());
-            e.printStackTrace();
+            Util.loge("delete(): ", e);
+            raise(e);
         }
 
         return false;
     }
 
-    public boolean deleteBy(String col, Object val) {
-        if(val.getClass().equals(String.class)) {
-            val = "'" + val + "'";
-        }
-
-        int rows = db.delete(TABLE_NAME, col + " = " + val, null);
+    /**
+     * Delete entity objects based on given column and column value.
+     *
+     * @param column    table column
+     * @param value     column value
+     * @return          true if at least one row is deleted
+     */
+    public boolean deleteBy(String column, Object value) {
+        int rows;
+        if(value != null)
+            rows = db.delete(TABLE_NAME, column + " = ?", new String[] {String.valueOf(value)});
+        else
+            rows = db.delete(TABLE_NAME, column + " IS NULL", null);
         return (rows > 0);
     }
 
+    /**
+     * Delete an entity data entirely
+     */
     public void deleteAll() {
-        List<T> list = findAll();
-        for(T t : list) {
-            delete(t);
-        }
+        runQuery(SqlBuilder.newInstance().delete(TABLE_NAME).getQuery());
     }
 
+    /**
+     * Return the number of rows in an entity table.
+     *
+     * @return      number of rows
+     */
     public int size() {
         return findAll().size();
     }
+
 }
