@@ -3,6 +3,7 @@ package com.guster.skydb.sample;
 import android.content.Context;
 import android.util.Log;
 
+import com.guster.skydb.Criteria;
 import com.guster.skydb.sample.dao.AttendanceRepository;
 import com.guster.skydb.sample.dao.LecturerRepository;
 import com.guster.skydb.sample.dao.StudentRepository;
@@ -20,11 +21,11 @@ import java.util.List;
  *
  */
 public class DataContentProvider {
-    public static void loadDummyData(Context context) {
+    public static void loadDummyData() {
         long time = System.currentTimeMillis();
 
         // Subject
-        SubjectRepository subjectRepository = new SubjectRepository(context);
+        SubjectRepository subjectRepository = new SubjectRepository();
         String[] titles = {"Artificial Intelligence", "Project Management",
                 "Art of Communication", "Theory of Computation", "Foundation Engineering", "Political Mind"};
         for(int i=0; i<titles.length; i++) {
@@ -37,7 +38,7 @@ public class DataContentProvider {
         }
 
         // students
-        StudentRepository studentRepository = new StudentRepository(context);
+        StudentRepository studentRepository = new StudentRepository();
         String[] studentFnames = {"Koby", "Main", "Eric", "Charlie", "Brett", "Jimmy"};
         String[] studentLnames = {"Ryan", "Keith", "Claptin", "Factory", "Jackson", "Light"};
         for(int i=0; i<studentFnames.length; i++) {
@@ -55,7 +56,7 @@ public class DataContentProvider {
         }
 
         // lecturers
-        LecturerRepository lecturerRepository = new LecturerRepository(context);
+        LecturerRepository lecturerRepository = new LecturerRepository();
         String[] lecturerFnames = {"Lim", "Core", "Tora", "Shanks", "Mike", "Navi Shan'h"};
         String[] lecturerLnames = {"Pricelle", "Simon", "Yamato", "Yes", "Chang", "Carl"};
         for(int i=0; i<lecturerFnames.length; i++) {
@@ -69,9 +70,9 @@ public class DataContentProvider {
         }
     }
 
-    public static void testDbInsertPerformance(Context context) {
+    public static void testDbInsertPerformance() {
         // test insert performance with single insert row against multiple insert row
-        SubjectRepository subjectRepository = new SubjectRepository(context);
+        SubjectRepository subjectRepository = new SubjectRepository();
         int maxItems = 20000;
         long time = System.currentTimeMillis();
         List<Subject> subjects = new ArrayList<>();
@@ -123,6 +124,11 @@ public class DataContentProvider {
         Attendance at = new Attendance();
         at.setStudentId("stu0001");
         at.setLecturerId("lec0001");
-        attendanceRepository.findUnique(at);
+
+        Criteria criteria = new Criteria()
+                .equal(Attendance.COL_STUDENT_ID, "stu0001")
+                .equal(Attendance.COL_LECTURER_ID, "lec0001");
+        attendanceRepository.findByCriteria(criteria);
+        //attendanceRepository.findUnique(at);
     }
 }
