@@ -24,7 +24,7 @@ public class DataContentProvider {
     public static void loadDummyData() {
         long time = System.currentTimeMillis();
 
-        // Subject
+        // subjects
         SubjectRepository subjectRepository = new SubjectRepository();
         String[] titles = {"Artificial Intelligence", "Project Management",
                 "Art of Communication", "Theory of Computation", "Foundation Engineering", "Political Mind"};
@@ -108,7 +108,7 @@ public class DataContentProvider {
     }
 
     public static void testQueryBuilder(Context context) {
-        AttendanceRepository attendanceRepository = new AttendanceRepository(context);
+        AttendanceRepository attendanceRepository = new AttendanceRepository();
         attendanceRepository.findBy(Attendance.COL_STUDENT_ID, "okman");
         attendanceRepository.findBy(
                 new String[]{Attendance.COL_STUDENT_ID, Attendance.COL_LECTURER_ID},

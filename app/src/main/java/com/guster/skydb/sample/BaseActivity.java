@@ -62,19 +62,19 @@ public class BaseActivity extends ActionBarActivity {
     }
 
     public StudentRepository getStudentRepository() {
-        return new StudentRepository(getApplicationContext());
+        return new StudentRepository();
     }
 
     public LecturerRepository getLecturerRepository() {
-        return new LecturerRepository(getApplicationContext());
+        return new LecturerRepository();
     }
 
     public SubjectRepository getSubjectRepository() {
-        return new SubjectRepository(getApplicationContext());
+        return new SubjectRepository();
     }
 
     public AttendanceRepository getAttendanceRepository() {
-        return new AttendanceRepository(getApplicationContext());
+        return new AttendanceRepository();
     }
 
     public void saveDbToSdCard(String dbName) {

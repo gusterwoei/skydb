@@ -96,7 +96,7 @@ public class Repository<T> {
      * @param <T>   Entity class type
      * @return      Repository of a given class type
      */
-    public static <T> Repository<T> create(Class<T> cls) {
+    public static <T> Repository<T> get(Class<T> cls) {
         if(!repositories.containsKey(cls.getName())) {
             repositories.put(cls.getName(), new Repository<>(cls));
         }
@@ -150,7 +150,10 @@ public class Repository<T> {
         for(Field field : allDbFields) {
             try {
                 Column column = allDbFieldAnnotations.get(i);
-                listener.onEachField(column.name(), field.get(item), field, column, i);
+                listener.onEachField(column.name(),
+                        (item != null ? field.get(item) : null),
+                        field,
+                        column, i);
                 i++;
             } catch (IllegalAccessException e) {
                 Util.loge("for each field exception: ", e);
@@ -197,7 +200,14 @@ public class Repository<T> {
         return query;
     }
 
-    protected T getInstance(final Cursor cursor) {
+    /**
+     * Return an entity object with a given cursor, the fields are mapped automatically
+     * based on @Column and the cursor's column name
+     *
+     * @param cursor    Database Cursor
+     * @return          Object of type T
+     */
+    public T getInstance(final Cursor cursor) {
         try {
             // create a new object to return
             final T obj;
@@ -779,7 +789,7 @@ public class Repository<T> {
      */
     public int updateBy(String column, Object value, ContentValues values) {
         String wheres = (column + " = ?");
-        String[] whereArgs = new String[] { (value != null ? DatabaseUtils.sqlEscapeString((String) value) : null) };
+        String[] whereArgs = new String[] { (value != null ? String.valueOf(value) : null) };
 
         return db.update(TABLE_NAME, values, wheres, whereArgs);
     }
@@ -793,7 +803,8 @@ public class Repository<T> {
      * @return          number of updated rows
      */
     public int updateBy(Criteria criteria, ContentValues values) {
-        return db.update(TABLE_NAME, values, criteria.build(), null);
+        String where = criteria.build();
+        return db.update(TABLE_NAME, values, where, null);
     }
 
     /**
