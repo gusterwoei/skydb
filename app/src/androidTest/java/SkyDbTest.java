@@ -85,8 +85,8 @@ public class SkyDbTest {
         log("Data loaded successfully.");
 
         StudentRepository studentRepository = new StudentRepository();
-        final SubjectRepository subjectRepository = new SubjectRepository();
         LecturerRepository lecturerRepository = new LecturerRepository();
+        final SubjectRepository subjectRepository = new SubjectRepository();
 
         // check subject table count
         assertThat("subjects should > 0", subjectRepository.size(), greaterThan(0));
