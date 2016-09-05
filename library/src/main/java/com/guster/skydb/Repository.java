@@ -225,12 +225,12 @@ public class Repository<T> {
 
                     switch (type) {
                         case Cursor.FIELD_TYPE_INTEGER:
-                            val = cursor.getInt(columnIndex);
+                            int valint = cursor.getInt(columnIndex);
                             if(field.getType().equals(Long.class) || field.getType().equals(Long.TYPE)) {
-                                val = Long.parseLong(val+"");
+                                val = Long.parseLong(valint+"");
 
                             } else if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
-                                val = (val == 1);
+                                val = (valint == 1);
                             }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:
