@@ -39,6 +39,15 @@ public class Subject {
 
     public Subject() {}
 
+    public Subject(String subjectId, String title) {
+        this.subjectId = subjectId;
+        this.title = title;
+
+        long time = System.currentTimeMillis();
+        this.createdDate = time;
+        this.modifiedDate = time;
+    }
+
     public long get_id() {
         return _id;
     }

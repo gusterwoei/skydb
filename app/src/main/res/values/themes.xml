@@ -7,7 +7,7 @@
     </style>
 
     <style name="MainTheme.NoActionBar" parent="Theme.AppCompat.Light">
-        <item name="windowActionBar">false</item>
+        <item name="windowActionBar">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@drawable/toolbar_dropshadow</item>

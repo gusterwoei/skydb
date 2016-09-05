@@ -1,7 +1,5 @@
 package com.guster.skydb.sample.dao;
 
-import android.content.Context;
-
 import com.guster.skydb.Repository;
 import com.guster.skydb.sample.domain.Subject;
 
@@ -11,8 +9,8 @@ import com.guster.skydb.sample.domain.Subject;
  */
 public class SubjectRepository extends Repository<Subject> {
 
-    public SubjectRepository(Context context) {
-        super(context, Subject.class);
+    public SubjectRepository() {
+        super(Subject.class);
     }
 
 }

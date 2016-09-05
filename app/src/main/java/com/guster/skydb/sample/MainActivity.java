@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         }
         else if(id == com.guster.skydb.sample.R.id.action_insert) {
             Log.d("ABC", "Inserting all subjects...");
-            DataContentProvider.testDbInsertPerformance(getApplicationContext());
+            DataContentProvider.testDbInsertPerformance();
         }
         else if(id == com.guster.skydb.sample.R.id.action_fetch) {
             Log.d("ABC", "Fetching all subjects...");

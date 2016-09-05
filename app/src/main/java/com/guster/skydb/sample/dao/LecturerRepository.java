@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class LecturerRepository extends Repository<Lecturer> {
 
-    public LecturerRepository(Context context) {
-        super(context, Lecturer.class);
+    public LecturerRepository() {
+        super(Lecturer.class);
     }
 }
