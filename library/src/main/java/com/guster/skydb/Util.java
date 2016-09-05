@@ -13,4 +13,8 @@ class Util {
     public static void loge(String msg) {
         Log.e("SKYDB", msg);
     }
+
+    public static void loge(String msg, Exception e) {
+        Log.e("SKYDB", msg, e);
+    }
 }

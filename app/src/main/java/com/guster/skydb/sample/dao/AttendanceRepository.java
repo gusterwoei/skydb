@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class AttendanceRepository extends Repository<Attendance> {
 
-    public AttendanceRepository(Context context) {
-        super(context, Attendance.class);
+    public AttendanceRepository() {
+        super(Attendance.class);
     }
 
     @Override
@@ -34,10 +34,9 @@ public class AttendanceRepository extends Repository<Attendance> {
                 .innerJoin("a", Student.TABLE_NAME, "stu", "a.studentId = stu.studentId")
                 .innerJoin("a", Subject.TABLE_NAME, "sub", "a." + Attendance.COL_SUBJECT_ID + " = sub.subjectId")
                 .where("stu.status = :status")
-                .bindValue("status", 0)
-                .build();
+                .bindValue("status", 0);
         String query = builder.getQuery();
-        return cursorToList(query, new CursorToInstanceListener<Attendance>() {
+        return findByQuery(query, new CursorToInstanceListener<Attendance>() {
             @Override
             public Attendance onEachCursor(Cursor cursor) {
                 Attendance attendance = new Attendance();
@@ -60,8 +59,7 @@ public class AttendanceRepository extends Repository<Attendance> {
                 .select("*")
                 .from(Attendance.TABLE_NAME, "a")
                 .orderBy(Attendance.COL_STUDENT_ID)
-                .limit(1, size() / 2)
-                .build();
-        return cursorToList(query.getQuery());
+                .limit(1, size() / 2);
+        return findByQuery(query.getQuery());
     }
 }

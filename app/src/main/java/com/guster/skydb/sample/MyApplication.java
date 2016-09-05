@@ -23,7 +23,7 @@ public class MyApplication extends Application {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstTime = sp.getBoolean("first_time", true);
         if(firstTime) {
-            DataContentProvider.loadDummyData(this);
+            DataContentProvider.loadDummyData();
 
             sp.edit().putBoolean("first_time", false).apply();
         }

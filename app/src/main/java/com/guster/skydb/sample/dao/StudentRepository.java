@@ -10,8 +10,8 @@ import com.guster.skydb.sample.domain.Student;
  */
 public class StudentRepository extends Repository<Student> {
 
-    public StudentRepository(Context context) {
-        super(context, Student.class);
+    public StudentRepository() {
+        super(Student.class);
     }
 
     @Override

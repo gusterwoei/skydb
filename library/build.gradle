@@ -3,17 +3,17 @@ apply plugin: 'com.android.library'
 ext {
     PUBLISH_GROUP_ID = 'com.guster'
     PUBLISH_ARTIFACT_ID = 'skydb'
-    PUBLISH_VERSION = '2.0.6'
+    PUBLISH_VERSION = '3.0.0'
 }
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         //applicationId "com.guster.skydb"
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName PUBLISH_VERSION
     }
@@ -27,7 +27,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    //compile 'com.guster:sqlbuilder:1.0.2'
 }
 
 apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/master/android-release-aar.gradle'
