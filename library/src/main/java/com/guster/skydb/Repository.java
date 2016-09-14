@@ -225,18 +225,23 @@ public class Repository<T> {
 
                     switch (type) {
                         case Cursor.FIELD_TYPE_INTEGER:
-                            int valint = cursor.getInt(columnIndex);
+                            //int valint = cursor.getInt(columnIndex);
                             if(field.getType().equals(Long.class) || field.getType().equals(Long.TYPE)) {
-                                val = Long.parseLong(valint+"");
-
+                                //val = Long.parseLong(valint+"");
+                                val = cursor.getLong(columnIndex);
                             } else if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
+                                int valint = cursor.getInt(columnIndex);
                                 val = (valint == 1);
+                            } else {
+                                val = cursor.getInt(columnIndex);
                             }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:
-                            val = cursor.getFloat(columnIndex);
                             if(field.getType().equals(Double.class) || field.getType().equals(Double.TYPE)) {
-                                val = Double.parseDouble(val+"");
+                                //val = Double.parseDouble(val+"");
+                                val = cursor.getDouble(columnIndex);
+                            } else {
+                                val = cursor.getFloat(columnIndex);
                             }
                             break;
                         case Cursor.FIELD_TYPE_STRING:
