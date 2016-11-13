@@ -133,16 +133,13 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
             List<String> uniqueColumns = new ArrayList<>();
             try {
                 int count = 0;
-                //String str = "";
                 for(Field field : allFields) {
                     field.setAccessible(true);
 
                     Class fieldType = field.getType();
                     Column col = field.getAnnotation(Column.class);
                     if(col != null) {
-
                         String str = constructColumnStmnt(fieldType, col, uniqueColumns);
-
                         if(count < allFields.size() - 1) {
                             str += ", ";
                         }
@@ -218,12 +215,10 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
             str += "INTEGER ";
         } else if(fieldType.equals(Double.TYPE)  || fieldType.equals(Double.class)) {
             str += "REAL ";
-            //str += "NUMERIC ";
         } else if(fieldType.equals(Float.TYPE)  || fieldType.equals(Float.class)) {
             str += "REAL ";
-            //str += "NUMERIC ";
         } else if(fieldType.equals(Boolean.TYPE)  || fieldType.equals(Boolean.class)) {
-            str += "INTEGER ";
+            str += "TEXT ";
         } else {
             str += "TEXT ";
         }
@@ -247,6 +242,10 @@ public abstract class SkyDatabase extends SQLiteOpenHelper {
 
         // unique column
         if(col.unique())
+            str += "UNIQUE ";
+
+        // should this column belong to a unique group
+        if(col.uniqueGroup())
             uniqueColumns.add(col.name());
 
         return str;

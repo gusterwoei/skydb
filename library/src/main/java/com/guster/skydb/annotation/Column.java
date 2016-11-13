@@ -28,6 +28,7 @@ public @interface Column {
     String defaultValue() default "";
     boolean autoIncrement() default false;
     boolean primaryKey() default false;
-    boolean unique() default false;
     boolean notNull() default false;
+    boolean unique() default false;
+    boolean uniqueGroup() default false;
 }

@@ -52,6 +52,7 @@ public class DataContentProvider {
             student.setCreatedDate(time);
             student.setModifiedDate(time);
             student.setIsActive(i % 2 == 0);
+            student.setForeign(i % 2 == 0);
             studentRepository.save(student);
         }
 
@@ -64,6 +65,8 @@ public class DataContentProvider {
             lecturer.setLecturerId("LEC0" + i);
             lecturer.setFirstName(lecturerFnames[i]);
             lecturer.setLastName(lecturerLnames[i]);
+            lecturer.setType((i % 2 == 0) ? "Contract" : "Permanent");
+            lecturer.setSupervisor((i % 2 == 0) ? "Mike" : "Jason");
             lecturer.setCreatedDate(time);
             lecturer.setModifiedDate(time);
             lecturerRepository.save(lecturer);
@@ -129,6 +132,5 @@ public class DataContentProvider {
                 .equal(Attendance.COL_STUDENT_ID, "stu0001")
                 .equal(Attendance.COL_LECTURER_ID, "lec0001");
         attendanceRepository.findByCriteria(criteria);
-        //attendanceRepository.findUnique(at);
     }
 }

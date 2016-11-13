@@ -3,12 +3,12 @@ apply plugin: 'com.android.library'
 ext {
     PUBLISH_GROUP_ID = 'com.guster'
     PUBLISH_ARTIFACT_ID = 'skydb'
-    PUBLISH_VERSION = '2.1.1'
+    PUBLISH_VERSION = '2.2.0'
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "20.0.0"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         //applicationId "com.guster.skydb"
@@ -19,7 +19,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

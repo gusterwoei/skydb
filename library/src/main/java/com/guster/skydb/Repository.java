@@ -225,27 +225,28 @@ public class Repository<T> {
 
                     switch (type) {
                         case Cursor.FIELD_TYPE_INTEGER:
-                            //int valint = cursor.getInt(columnIndex);
                             if(field.getType().equals(Long.class) || field.getType().equals(Long.TYPE)) {
-                                //val = Long.parseLong(valint+"");
                                 val = cursor.getLong(columnIndex);
-                            } else if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
+                            } /*else if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
                                 int valint = cursor.getInt(columnIndex);
                                 val = (valint == 1);
-                            } else {
+                            }*/ else {
                                 val = cursor.getInt(columnIndex);
                             }
                             break;
                         case Cursor.FIELD_TYPE_FLOAT:
                             if(field.getType().equals(Double.class) || field.getType().equals(Double.TYPE)) {
-                                //val = Double.parseDouble(val+"");
                                 val = cursor.getDouble(columnIndex);
                             } else {
                                 val = cursor.getFloat(columnIndex);
                             }
                             break;
                         case Cursor.FIELD_TYPE_STRING:
-                            val = cursor.getString(columnIndex);
+                            if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
+                                val = Boolean.parseBoolean(cursor.getString(columnIndex));
+                            } else {
+                                val = cursor.getString(columnIndex);
+                            }
                             break;
                     }
 
@@ -282,10 +283,11 @@ public class Repository<T> {
             @Override
             public void onEachField(String column, Object value, Field field, Column dbField, int index) {
                 if(!dbField.autoIncrement() && value != null) {
-                    if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE))
-                        values.put(column, Boolean.valueOf(value + ""));
-                    else
-                        values.put(column, value + "");
+                    //if(field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE))
+                    //    values.put(column, Boolean.valueOf(value + ""));
+                    //else
+                    //    values.put(column, String.valueOf(value));
+                    values.put(column, String.valueOf(value));
                 }
             }
         });

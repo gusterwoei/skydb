@@ -24,7 +24,8 @@ public class Student {
     public static final String COL_MODIFIED_DATE = "modifiedDate";
     public static final String COL_CONTACT = "contact";
     public static final String COL_NRIC = "nric";
-    private static final String COL_IS_ACTIVE = "isActive";
+    public static final String COL_IS_ACTIVE = "isActive";
+    public static final String COL_IS_FOREIGN = "isForeign";
 
     private long _id;
     @Column(name = COL_STUDENT_ID, primaryKey = true, notNull = true)
@@ -53,6 +54,8 @@ public class Student {
     private Long nric;
     @Column(name = COL_IS_ACTIVE)
     private Boolean isActive;
+    @Column(name = COL_IS_FOREIGN)
+    private boolean isForeign;
 
     public Student() {}
 
@@ -142,5 +145,13 @@ public class Student {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public boolean isForeign() {
+        return isForeign;
+    }
+
+    public void setForeign(boolean foreign) {
+        isForeign = foreign;
     }
 }

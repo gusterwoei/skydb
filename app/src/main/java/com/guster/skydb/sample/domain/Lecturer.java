@@ -14,17 +14,22 @@ public class Lecturer {
     public static final String COL_FIRST_NAME = "fname";
     public static final String COL_LAST_NAME = "lname";
     public static final String COL_LECTURER_ID = "lecturerId";
+    private static final String COL_TYPE = "type";
+    private static final String COL_SUBJECT_HEAD = "subjectHead";
     public static final String COL_CREATED_DATE = "createdDate";
     public static final String COL_MODIFIED_DATE = "modifiedDate";
 
-    //@DbField(column = COL_ID, primaryKey = true, autoIncrement = true)
     private long _id;
+    @Column(name = COL_LECTURER_ID, primaryKey = true, notNull = true)
+    private String lecturerId;
     @Column(name = COL_FIRST_NAME, notNull = true)
     private String firstName;
     @Column(name = COL_LAST_NAME, notNull = true)
     private String lastName;
-    @Column(name = COL_LECTURER_ID, primaryKey = true, notNull = true)
-    private String lecturerId;
+    @Column(name = COL_TYPE, notNull = false, uniqueGroup = false)
+    private String type;
+    @Column(name = COL_SUBJECT_HEAD, notNull = false, uniqueGroup = false)
+    private String supervisor;
     @Column(name = COL_CREATED_DATE, notNull = true)
     private long createdDate;
     @Column(name = COL_MODIFIED_DATE, notNull = true)
@@ -78,5 +83,21 @@ public class Lecturer {
 
     public void setModifiedDate(long modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSupervisor() {
+        return supervisor;
+    }
+
+    public void setSupervisor(String supervisor) {
+        this.supervisor = supervisor;
     }
 }
