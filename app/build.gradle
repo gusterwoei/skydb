@@ -26,6 +26,7 @@ dependencies {
 
     compile 'com.android.support:support-v4:23.+'
     compile 'com.android.support:appcompat-v7:23.+'
+    compile group: 'de.sven-jacobs', name: 'loremipsum', version: '1.0'
 //    compile 'com.guster:skydb:2.0.3'
 //    compile project(':libraryaar')
     compile project(':library')

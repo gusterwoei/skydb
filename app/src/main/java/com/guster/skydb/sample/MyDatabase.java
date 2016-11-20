@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.guster.skydb.SkyDatabase;
 import com.guster.skydb.sample.domain.Attendance;
+import com.guster.skydb.sample.domain.Book;
 import com.guster.skydb.sample.domain.Lecturer;
 import com.guster.skydb.sample.domain.Student;
 import com.guster.skydb.sample.domain.Subject;
@@ -26,6 +27,7 @@ public class MyDatabase extends SkyDatabase {
         helper.createTable(Lecturer.class);
         helper.createTable(Subject.class);
         helper.createTable(Attendance.class);
+        helper.createTable(Book.class);
     }
 
     @Override

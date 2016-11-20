@@ -3,6 +3,7 @@ package com.guster.skydb.sample;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * Created by Gusterwoei on 3/18/15.
  */
-public class BaseActivity extends ActionBarActivity {
+public class BaseActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
     @Override
@@ -34,15 +35,15 @@ public class BaseActivity extends ActionBarActivity {
 
     @Override
     public void setContentView(int layoutResID) {
-        View toolbarView = getLayoutInflater().inflate(com.guster.skydb.sample.R.layout.toolbar, null);
+        View toolbarView = getLayoutInflater().inflate(R.layout.toolbar, null);
         ViewGroup root = (ViewGroup) getLayoutInflater().inflate(layoutResID, null);
         root.addView(toolbarView, 0);
         setContentView(root);
 
         // set toolbar as the action bar
-        toolbar = (Toolbar) findViewById(com.guster.skydb.sample.R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(com.guster.skydb.sample.R.color.white));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
 
         getSupportActionBar().setDisplayShowTitleEnabled(true);
     }
@@ -87,6 +88,7 @@ public class BaseActivity extends ActionBarActivity {
                 String backupDBPath = dbName;
                 File currentDB = new File(currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
+
 
                 if (currentDB.exists()) {
                     FileChannel src = new FileInputStream(currentDB).getChannel();
