@@ -16,11 +16,10 @@ public class Subject {
     public static final String COL_CREATED_DATE = "createdDate";
     public static final String COL_MODIFIED_DATE = "modifiedDate";
 
-    //@DbField(column = COL_ID, primaryKey = true, autoIncrement = true)
     private long _id;
     @Column(name = COL_SUBJECT_ID, primaryKey = true, notNull = true)
     private String subjectId;
-    @Column(name = COL_TITLE, notNull = true)
+    @Column(name = COL_TITLE, notNull = true, unique = true)
     private String title;
     @Column(name = COL_CREATED_DATE, notNull = true)
     private long createdDate;
