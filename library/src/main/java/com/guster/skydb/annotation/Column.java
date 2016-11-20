@@ -16,6 +16,8 @@
 
 package com.guster.skydb.annotation;
 
+import com.guster.skydb.Rule;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -27,6 +29,7 @@ public @interface Column {
     String name();
     String defaultValue() default "";
     boolean autoIncrement() default false;
+    Rule incrementRule() default Rule.INTEGER;
     boolean primaryKey() default false;
     boolean notNull() default false;
     boolean unique() default false;

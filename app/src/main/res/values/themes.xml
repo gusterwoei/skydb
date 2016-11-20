@@ -6,8 +6,8 @@
         <item name="android:actionBarStyle">@style/MyActionBarStyle.Dark</item>
     </style>
 
-    <style name="MainTheme.NoActionBar" parent="Theme.AppCompat.Light">
-        <item name="windowActionBar">true</item>
+    <style name="MainTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowContentOverlay">@drawable/toolbar_dropshadow</item>
