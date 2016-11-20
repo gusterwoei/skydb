@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.guster:skydb:2.1.1'
+    compile 'com.guster:skydb:2.2.0'
 }
 ...
 ```
@@ -112,6 +112,21 @@ public class Lecturer {
     public Lecturer() {}
     ...
 }
+```
+
+##### Primary Key Increment
+SkyDb supports 2 types of automatic increment of primary key value: Integer and UUID
+
+```java
+// increment using integer (Default behavior if incrementRule is not specified)
+@Column(column = "myid", primaryKey = true, autoIncrement = true, incrementRule = RULE.INTEGER)
+private long id;
+```
+
+```java
+// increment using UUID (Note: UUID only works for string type field)
+@Column(column = "myid", primaryKey = true, autoIncrement = true, incrementRule = RULE.UUID)
+private String id;
 ```
 
 ### 3. Create a DAO
