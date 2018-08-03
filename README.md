@@ -1,4 +1,4 @@
-# Sky Database
+# Sky Database (Deprecated)
 Sky Database is a powerful Android ORM library suitable for any project. It aims for easy
 integration and high extensibility.
 
